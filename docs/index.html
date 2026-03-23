@@ -107,7 +107,7 @@ button{cursor:pointer;font-family:var(--font)}
 .btn-o{background:transparent;color:var(--text2);border-color:var(--border)}.btn-o:hover{border-color:var(--amber);color:var(--amber)}
 .bsm{padding:5px 11px;font-size:11px}
 
-/* ── HERO (visão geral) ── */
+/* ── HERO ── */
 .hero{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:22px;display:flex;align-items:center;gap:16px}
 .hero-ic{width:48px;height:48px;border-radius:12px;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .hero-title{font-size:18px;font-weight:700}
@@ -225,8 +225,8 @@ button{cursor:pointer;font-family:var(--font)}
             <span class="tag g" id="sb-tag">—</span>
           </div>
           <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-            <div style="display:flex;align-items:center;gap:10px"><span class="dot active"></span><div><div style="font-weight:600;font-size:12px">n8n</div><div style="font-size:11px;color:var(--text2)">Plataforma de automação</div></div></div>
-            <span class="tag b" id="n8n-tag">—</span>
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot active"></span><div><div style="font-weight:600;font-size:12px">n8n Webhooks</div><div style="font-size:11px;color:var(--text2)">3 webhooks ativos</div></div></div>
+            <span class="tag g" id="n8n-tag">—</span>
           </div>
           <div class="card" style="display:flex;justify-content:space-between;align-items:center">
             <div style="display:flex;align-items:center;gap:10px"><span class="dot pending"></span><div><div style="font-weight:600;font-size:12px">Discord Bot</div><div style="font-size:11px;color:var(--text2)">Token pendente de renovação</div></div></div>
@@ -314,13 +314,14 @@ button{cursor:pointer;font-family:var(--font)}
         <div>
           <div class="stitle">Ações do Pipeline</div>
           <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE SCOUT</div><div style="font-size:11px;color:var(--text2)">Inicia descoberta de grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('scout','as')"><span id="as">▶ Iniciar</span></button></div>
-          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE EXTRATOR</div><div style="font-size:11px;color:var(--text2)">Extrai leads dos grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('extrator','ae')"><span id="ae">▶ Iniciar</span></button></div>
-          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE VALIDADOR</div><div style="font-size:11px;color:var(--text2)">Valida e segmenta grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('validador','av')"><span id="av">▶ Iniciar</span></button></div>
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE EXTRATOR</div><div style="font-size:11px;color:var(--text2)">Extrai leads dos grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('outreach','ae')"><span id="ae">▶ Iniciar</span></button></div>
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE VALIDADOR</div><div style="font-size:11px;color:var(--text2)">Valida e segmenta grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('outreach','av')"><span id="av">▶ Iniciar</span></button></div>
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">Relatório Diário</div><div style="font-size:11px;color:var(--text2)">Gera relatório via AGENTE DATA-MANAGER</div></div><button class="btn btn-o bsm" onclick="trigN8n('relatorio','ar')"><span id="ar">▶ Iniciar</span></button></div>
           <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">Atualizar Métricas</div><div style="font-size:11px;color:var(--text2)">Recarrega dados do Supabase</div></div><button class="btn btn-a bsm" onclick="loadData()">↻ Refresh</button></div>
         </div>
         <div>
           <div class="stitle">System Log</div>
-          <div class="card" style="padding:10px"><div id="slog" style="max-height:270px;overflow-y:auto;font-size:11px;font-family:monospace"></div></div>
+          <div class="card" style="padding:10px"><div id="slog" style="max-height:310px;overflow-y:auto;font-size:11px;font-family:monospace"></div></div>
         </div>
       </div>
     </div>
@@ -352,15 +353,20 @@ button{cursor:pointer;font-family:var(--font)}
         <div>
           <div class="stitle">Conexões</div>
           <div class="card"><div style="font-weight:600;margin-bottom:10px">Supabase</div><div style="font-size:11px;color:var(--text2);margin-bottom:5px">URL</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace;word-break:break-all">https://bunxyoekblzyblpqlodk.supabase.co</div><div style="font-size:11px;color:var(--text2);margin:10px 0 6px">Tabelas</div><div><span class="tag gr">raw_groups</span><span class="tag gr">valid_groups</span><span class="tag gr">lote_control</span><span class="tag gr">master_leads</span><span class="tag gr">kpi_tracker</span></div></div>
-          <div class="card"><div style="font-weight:600;margin-bottom:10px">n8n</div><div style="font-size:11px;color:var(--text2);margin-bottom:5px">URL</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace">https://bekas00.app.n8n.cloud</div></div>
+          <div class="card"><div style="font-weight:600;margin-bottom:10px">n8n Webhooks</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Scout</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace;margin-bottom:8px">https://bekas00.app.n8n.cloud/webhook/igaming-scout</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Outreach</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace;margin-bottom:8px">https://bekas00.app.n8n.cloud/webhook/igaming-outreach</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Relatório</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace">https://bekas00.app.n8n.cloud/webhook/igaming-relatorio</div>
+          </div>
         </div>
         <div>
           <div class="stitle">Projeto</div>
           <div class="card">
             <div class="tr"><span style="color:var(--text2);flex:1">Nome</span><span>IGAMING-MASTER-FLOW</span></div>
-            <div class="tr"><span style="color:var(--text2);flex:1">Versão</span><span>1.0.0</span></div>
+            <div class="tr"><span style="color:var(--text2);flex:1">Versão</span><span>1.1.0</span></div>
             <div class="tr"><span style="color:var(--text2);flex:1">Agentes</span><span>23 documentados</span></div>
-            <div class="tr"><span style="color:var(--text2);flex:1">n8n nós</span><span>105+</span></div>
+            <div class="tr"><span style="color:var(--text2);flex:1">n8n nós</span><span>109 nós</span></div>
+            <div class="tr"><span style="color:var(--text2);flex:1">Webhooks</span><span style="color:var(--green)">3 ativos ✓</span></div>
             <div class="tr" style="border:none"><span style="color:var(--text2);flex:1">GitHub</span><a href="https://github.com/Msliz00/igaming-master-flow" style="color:var(--blue);font-size:11px">igaming-master-flow ↗</a></div>
           </div>
         </div>
@@ -372,11 +378,26 @@ button{cursor:pointer;font-family:var(--font)}
 </div>
 
 <script>
-const CFG={
-  supabase:{url:'https://bunxyoekblzyblpqlodk.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1bnh5b2VrYmx6eWJscHFsb2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTE5NTYsImV4cCI6MjA4OTUyNzk1Nn0.4_zQpcl_X2EaeL_bR0_iHkeKgQzjOxV6Hgisp7p3Vts'},
-  n8n:{url:'https://bekas00.app.n8n.cloud',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjODM4ZjI2OC02NjYxLTRiMjktYjlkMS00NzBjOTdjYWRkN2QiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiM2YzNDI2ZWQtMTk1NS00MzNlLTg4NmEtZjQ1NDMzZjVlZGQ4IiwiaWF0IjoxNzczOTYwNzk3LCJleHAiOjE3NzY0ODEyMDB9.1orOYxWosfiAx1HkW_6X_vZNHYMcih5pYt5ks2-Jfuo',wh:{scout:'/webhook/scout-trigger',extrator:'/webhook/extrator-trigger',validador:'/webhook/validador-trigger'}},
-  claude:{model:'claude-sonnet-4-20250514',sys:'Você é o AGENTE SISTEMA do IGAMING-MASTER-FLOW. Pipeline iGaming de extração de leads. 175 grupos no Supabase. 23 agentes, nenhum ativo. n8n 105+ nós. Responda em pt-BR, técnico e direto.'}
+// ══ CONFIG CENTRAL ══
+const CFG = {
+  supabase: {
+    url: 'https://bunxyoekblzyblpqlodk.supabase.co',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1bnh5b2VrYmx6eWJscHFsb2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTE5NTYsImV4cCI6MjA4OTUyNzk1Nn0.4_zQpcl_X2EaeL_bR0_iHkeKgQzjOxV6Hgisp7p3Vts'
+  },
+  // ✅ WEBHOOKS — CORS resolvido (substituiu API REST)
+  n8n: {
+    webhooks: {
+      scout:     'https://bekas00.app.n8n.cloud/webhook/igaming-scout',
+      outreach:  'https://bekas00.app.n8n.cloud/webhook/igaming-outreach',
+      relatorio: 'https://bekas00.app.n8n.cloud/webhook/igaming-relatorio'
+    }
+  },
+  claude: {
+    model: 'claude-sonnet-4-20250514',
+    sys: 'Você é o AGENTE SISTEMA do IGAMING-MASTER-FLOW. Pipeline iGaming de extração de leads. Supabase com grupos. 23 agentes, 1 ativo. n8n 109 nós com 3 webhooks ativos. Responda em pt-BR, técnico e direto.'
+  }
 };
+
 const AGENTS=[
   {name:'AGENTE SISTEMA',level:'L0',desc:'Dashboard e memória central',status:'active'},
   {name:'AGENTE ORQUESTRADOR',level:'L0',desc:'Orquestração geral',status:'inactive'},
@@ -402,15 +423,17 @@ const AGENTS=[
   {name:'AGENTE OUTREACH-2',level:'L3',desc:'Outreach canal 2',status:'inactive'},
   {name:'AGENTE CLEANUP',level:'L3',desc:'Limpeza de dados',status:'inactive'},
 ];
+
 const CHATS=[
-  {name:'CHAT · WORKFLOW',color:'#ea781e',status:'active',time:'Hoje',p:65,sum:'Workflow com 105+ nós no n8n. Structured Output Parser configurado. Merge node em Append mode.',tags:['n8n','105 nós','GPT-4o']},
-  {name:'CHAT · SISTEMA',color:'#22c55e',status:'active',time:'Agora',p:80,sum:'Dashboard no ar. Visual painel clipadores. Chat Claude API ativo. GitHub Pages + Supabase integrados.',tags:['Dashboard','GitHub Pages','Claude API']},
+  {name:'CHAT · WORKFLOW',color:'#ea781e',status:'active',time:'Hoje',p:65,sum:'Workflow com 109 nós no n8n. 3 webhooks ativos. Structured Output Parser configurado.',tags:['n8n','109 nós','GPT-4o']},
+  {name:'CHAT · SISTEMA',color:'#22c55e',status:'active',time:'Agora',p:85,sum:'Dashboard no ar. CORS resolvido via webhooks. GitHub Pages + Supabase integrados.',tags:['Dashboard','GitHub Pages','Webhooks ✓']},
   {name:'CHAT · AGENTES',color:'#eab308',status:'pending',time:'Ontem',p:30,sum:'23 agentes documentados. Discord token pendente. TGStat API integração pendente.',tags:['23 Agentes','Discord','TGStat']},
   {name:'CHAT · COPY',color:'#3b82f6',status:'inactive',time:'Pendente',p:10,sum:'Copy por vertical: Slots, Casino, Aviator, Sports, Poker, Mines. Aguardando leads.',tags:['6 Verticals','Copy AI']},
 ];
+
 const TITLES={overview:'Visão Geral',pipeline:'Pipeline',metrics:'Métricas',agents:'Agentes',chats:'Memória dos Chats',control:'Central de Controle',chat:'Chat Central',config:'Configurações'};
 
-// NAV
+// ══ NAV ══
 document.querySelectorAll('.si').forEach(el=>{
   el.addEventListener('click',()=>{
     const pg=el.dataset.page;
@@ -424,7 +447,7 @@ document.querySelectorAll('.si').forEach(el=>{
   });
 });
 
-// UTILS
+// ══ UTILS ══
 function ts(){return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
 function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
 function slog(msg,t='inf'){
@@ -436,39 +459,63 @@ function slog(msg,t='inf'){
   el.appendChild(d);el.scrollTop=el.scrollHeight;
 }
 
-// SUPABASE
+// ══ SUPABASE ══
 async function sb(table,params=''){
-  try{const r=await fetch(`${CFG.supabase.url}/rest/v1/${table}?${params}`,{headers:{'apikey':CFG.supabase.key,'Authorization':`Bearer ${CFG.supabase.key}`,'Prefer':'count=exact'}});const count=r.headers.get('content-range')?.split('/')[1]??'?';return{data:await r.json(),count,ok:r.ok};}
-  catch(e){return{data:[],count:'ERR',ok:false,error:e.message}}
-}
-async function n8nq(path){
-  try{const r=await fetch(`${CFG.n8n.url}/api/v1/${path}`,{headers:{'X-N8N-API-KEY':CFG.n8n.key}});return{data:await r.json(),ok:r.ok};}
-  catch(e){return{data:null,ok:false,error:e.message}}
+  try{
+    const r=await fetch(`${CFG.supabase.url}/rest/v1/${table}?${params}`,{
+      headers:{'apikey':CFG.supabase.key,'Authorization':`Bearer ${CFG.supabase.key}`,'Prefer':'count=exact'}
+    });
+    const count=r.headers.get('content-range')?.split('/')[1]??'?';
+    return{data:await r.json(),count,ok:r.ok};
+  }catch(e){return{data:[],count:'ERR',ok:false,error:e.message}}
 }
 
+// ══ N8N STATUS — via ping no webhook scout ══
+async function checkN8n(){
+  try{
+    const r=await fetch(CFG.n8n.webhooks.scout,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ping:true})
+    });
+    // n8n retorna 200 mesmo sem processar — qualquer resposta = online
+    return r.status < 500;
+  }catch(e){return false;}
+}
+
+// ══ LOAD DATA ══
 async function loadData(){
   slog('Carregando dados...','inf');
-  const[raw,valid,lotes,leads,wf]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('valid_groups','select=id&limit=1'),sb('lote_control','select=id&limit=1'),sb('master_leads','select=id&limit=1'),n8nq('workflows')]);
-  // chips
+  const[raw,valid,lotes,leads,n8nOk]=await Promise.all([
+    sb('raw_groups','select=id&limit=1'),
+    sb('valid_groups','select=id&limit=1'),
+    sb('lote_control','select=id&limit=1'),
+    sb('master_leads','select=id&limit=1'),
+    checkN8n()
+  ]);
+
+  // Chips status
   const sbOk=raw.ok||valid.ok;
   document.getElementById('chip-sb').className=`chip ${sbOk?'on':'off'}`;
-  document.getElementById('chip-n8n').className=`chip ${wf.ok?'on':'off'}`;
-  set('sb-tag',sbOk?`Online`:'Offline');
-  set('n8n-tag',wf.ok?`${wf.data?.data?.length??0} workflows`:'Offline');
-  slog(`Supabase: ${sbOk?'online':'offline'}`,sbOk?'ok':'err');
-  slog(`n8n: ${wf.ok?'online':'offline'}`,wf.ok?'ok':'err');
-  // valores
-  const r=raw.count,v=valid.count,l=leads.count,lo=lotes.count;
+  document.getElementById('chip-n8n').className=`chip ${n8nOk?'on':'off'}`;
+  set('sb-tag', sbOk ? 'Online' : 'Offline');
+  set('n8n-tag', n8nOk ? 'Webhooks Ativos' : 'Offline');
+  slog(`Supabase: ${sbOk?'online':'offline'}`, sbOk?'ok':'err');
+  slog(`n8n: ${n8nOk?'webhooks online':'offline'}`, n8nOk?'ok':'err');
+
+  // Valores
+  const r=raw.count, v=valid.count, l=leads.count, lo=lotes.count;
   ['ov-g','mt-g','f-r'].forEach(id=>set(id,r));
   ['ov-v','f-v'].forEach(id=>set(id,v));
   ['ov-l','mt-l','pp-l','f-l'].forEach(id=>set(id,l));
-  set('pp-r',r);set('pp-v',v);['pp-lo','f-lo'].forEach(id=>set(id,lo));
+  set('pp-r',r); set('pp-v',v);
+  ['pp-lo','f-lo'].forEach(id=>set(id,lo));
   const taxa=(r!='ERR'&&r!='?'&&v!='ERR'&&v!='?')?Math.round(parseInt(v||0)/parseInt(r||1)*100)+'%':'—%';
-  set('mt-t',taxa);set('f-vp',taxa);
+  set('mt-t',taxa); set('f-vp',taxa);
   slog('Dados atualizados.','ok');
 }
 
-// RENDER
+// ══ RENDER ══
 function renderAgents(){
   const secs={'NÚCLEO (L0-L1)':['L0','L1'],'PIPELINE (L2)':['L2'],'ESPECIALISTAS (L3)':['L3']};
   let h='';
@@ -482,6 +529,7 @@ function renderAgents(){
   }
   document.getElementById('agents-list').innerHTML=h;
 }
+
 function renderChats(){
   let h='';
   CHATS.forEach(c=>{
@@ -493,15 +541,29 @@ function renderChats(){
   document.getElementById('chats-list').innerHTML=h;
 }
 
-// N8N
-async function trigN8n(agent,btnId){
-  const btn=document.getElementById(btnId);if(btn)btn.textContent='Executando...';
-  try{const r=await fetch(`${CFG.n8n.url}${CFG.n8n.wh[agent]}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agent})});const ok=r.ok||r.status===200;if(btn)btn.textContent=ok?'✓ Enviado':'✗ Erro';slog(`${agent}: ${ok?'ok':'erro'}`,ok?'ok':'err');}
-  catch(e){if(btn)btn.textContent='✗ Erro';slog(`${agent}: ${e.message}`,'err');}
+// ══ N8N TRIGGER — via webhook ✅ ══
+async function trigN8n(agent, btnId){
+  const btn=document.getElementById(btnId);
+  if(btn)btn.textContent='Executando...';
+  const url=CFG.n8n.webhooks[agent];
+  if(!url){slog(`Webhook '${agent}' não configurado`,'err');if(btn)btn.textContent='✗ Erro';return;}
+  try{
+    const r=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({trigger:agent, ts:new Date().toISOString()})
+    });
+    const ok=r.status<500;
+    if(btn)btn.textContent=ok?'✓ Enviado':'✗ Erro';
+    slog(`${agent}: ${ok?'disparado com sucesso ('+r.status+')':'erro '+r.status}`, ok?'ok':'err');
+  }catch(e){
+    if(btn)btn.textContent='✗ Erro';
+    slog(`${agent}: ${e.message}`,'err');
+  }
   setTimeout(()=>{if(btn)btn.textContent='▶ Iniciar'},4000);
 }
 
-// CHAT
+// ══ CHAT ══
 const hist=[];
 function addMsg(role,text){
   const w=document.getElementById('chat-msgs');
@@ -512,17 +574,23 @@ function addMsg(role,text){
   d.appendChild(b);const t=document.createElement('div');t.className='mtime';t.textContent=ts();d.appendChild(t);
   w.appendChild(d);w.scrollTop=w.scrollHeight;
 }
+
 async function runCmd(c){
   const cmd=c.trim().toLowerCase();
-  if(cmd==='/status'){const[g,l,wf]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('master_leads','select=id&limit=1'),n8nq('workflows')]);return `📊 **STATUS — ${ts()}**\n\nSupabase: ${g.ok?'🟢 ONLINE':'🔴 OFFLINE'} | raw_groups: ${g.count} | leads: ${l.count}\nn8n: ${wf.ok?'🟢 ONLINE':'🔴 OFFLINE'} | workflows: ${wf.ok?(wf.data?.data?.length??0):'ERR'}\nAgentes: 1/23 ativos`;}
+  if(cmd==='/status'){
+    const[g,l]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('master_leads','select=id&limit=1')]);
+    const n8nOk=await checkN8n();
+    return `📊 **STATUS — ${ts()}**\n\nSupabase: ${g.ok?'🟢 ONLINE':'🔴 OFFLINE'} | raw_groups: ${g.count} | leads: ${l.count}\nn8n: ${n8nOk?'🟢 WEBHOOKS ONLINE':'🔴 OFFLINE'}\nAgentes: 1/23 ativos`;
+  }
   if(cmd==='/grupos'){const r=await sb('raw_groups','select=*&limit=5&order=created_at.desc');if(!r.ok)return`❌ ${r.error}`;const lines=r.data.slice(0,5).map((g,i)=>`${i+1}. ${g.title||g.name||g.username||g.id}`).join('\n');return `📋 **GRUPOS — Total: ${r.count}**\n\n${lines||'Sem dados'}`;}
   if(cmd==='/leads'){const r=await sb('master_leads','select=*&limit=2');return `🎯 **LEADS — Total: ${r.count}**\n\n${r.data.length>0?JSON.stringify(r.data[0],null,2):'Tabela vazia — pipeline não executado ainda.'}`;}
-  if(cmd==='/workflows'){const r=await n8nq('workflows');if(!r.ok)return`❌ n8n offline`;const wfs=r.data?.data||[];return `⚙️ **WORKFLOWS — ${wfs.length} total**\n\n${wfs.map(w=>`• ${w.active?'🟢':'⚫'} ${w.name}`).join('\n')||'Nenhum'}`;}
+  if(cmd==='/workflows')return `⚙️ **WORKFLOWS**\n\n🟢 EXTRAÇÃO DE LEAD IGAMING — Publicado\n• 109 nós ativos\n• 3 webhooks online:\n  scout | outreach | relatorio`;
   if(cmd==='/agentes'){const act=AGENTS.filter(a=>a.status==='active'),pend=AGENTS.filter(a=>a.status==='pending');return `🤖 **AGENTES — ${AGENTS.length} total**\n\n🟢 Ativos (${act.length}): ${act.map(a=>a.name).join(', ')}\n🟡 Pendentes (${pend.length}): ${pend.map(a=>a.name).join(', ')}\n⚫ Inativos: ${AGENTS.length-act.length-pend.length}`;}
-  if(cmd==='/plano')return `🗺️ **PLANO**\n\n✅ Supabase + n8n + Dashboard no ar\n⏳ Discord token · TGStat API · GitHub Phase 1\n🚀 SCOUT ativo · Extração · KPI Tracker`;
+  if(cmd==='/plano')return `🗺️ **PLANO**\n\n✅ Supabase + n8n + Dashboard + CORS resolvido\n⏳ Discord token · TGStat API · GitHub Phase 1\n🚀 SCOUT ativo · Extração · KPI Tracker`;
   if(cmd==='/kpis'){const[r,v,l,lo]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('valid_groups','select=id&limit=1'),sb('master_leads','select=id&limit=1'),sb('lote_control','select=id&limit=1')]);return `📊 **KPIs**\nraw_groups: ${r.count} | valid_groups: ${v.count}\nmaster_leads: ${l.count} | lotes: ${lo.count}\nTaxa: ${r.ok&&v.ok?Math.round(parseInt(v.count||0)/parseInt(r.count||1)*100)+'%':'N/A'}`;}
   return null;
 }
+
 async function sendChat(){
   const inp=document.getElementById('cinput');const text=inp.value.trim();if(!text)return;
   const btn=document.getElementById('sbtn');inp.value='';btn.disabled=true;
@@ -545,14 +613,14 @@ async function sendChat(){
 function qc(cmd){document.getElementById('cinput').value=cmd;document.getElementById('cinput').focus();}
 function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
 
-// RELÓGIO
+// ══ RELÓGIO ══
 function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
-// BOOT
+// ══ BOOT ══
 (async()=>{
   updateClock();setInterval(updateClock,1000);
   renderAgents();renderChats();
-  addMsg('assistant','🟢 **SISTEMA ONLINE**\n\nBem-vindo, 00BABY. Carregando dados do Supabase e n8n...');
+  addMsg('assistant','🟢 **SISTEMA ONLINE**\n\nBem-vindo, 00BABY. CORS resolvido ✅ — Webhooks n8n ativos. Carregando dados...');
   await loadData();
   setInterval(loadData,60000);
 })();

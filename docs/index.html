@@ -1,687 +1,561 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IGAMING-MASTER-FLOW · Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGAMING · MASTER FLOW</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e0e0e; --bg-card:#1a1a1a; --bg-card2:#212121; --bg-hover:#252525;
+  --border:#2a2a2a; --border2:#333;
+  --amber:#ea781e; --amber-dim:rgba(234,120,30,.12); --amber-mid:rgba(234,120,30,.2);
+  --green:#22c55e; --green-dim:rgba(34,197,94,.15);
+  --blue:#3b82f6; --blue-dim:rgba(59,130,246,.15);
+  --yellow:#eab308; --yellow-dim:rgba(234,179,8,.15);
+  --red:#ef4444; --purple:#a855f7; --purple-dim:rgba(168,85,247,.15);
+  --text1:#f0f0f0; --text2:#9a9a9a; --text3:#555;
+  --sw:210px; --font:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text1);font-family:var(--font);font-size:13px;overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+button{cursor:pointer;font-family:var(--font)}
 
-    body {
-      background: #020a06;
-      color: #00ff88;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      line-height: 1.5;
-      overflow-x: hidden;
-    }
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh}
 
-    /* Header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 24px;
-      border-bottom: 1px solid #0a3a1a;
-      background: #030d07;
-    }
-    .header h1 {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 2px;
-    }
-    .header .meta {
-      color: #337755;
-      font-size: 11px;
-    }
-    .header .meta span { color: #00ff88; }
-    .header .status-dot {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #00ff88;
-      margin-right: 6px;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+/* ── SIDEBAR ── */
+#sb{width:var(--sw);background:#111;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sb-logo{padding:16px 14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:36px;height:36px;border-radius:9px;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-name{font-size:12px;font-weight:700;line-height:1.3}
+.sb-logo-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.sb-sec{padding:14px 12px 4px;font-size:9px;color:var(--text3);letter-spacing:1.5px;font-weight:600}
+.si{display:flex;align-items:center;gap:9px;padding:7px 10px;margin:1px 6px;border-radius:7px;cursor:pointer;transition:background .15s;color:var(--text2);font-size:12px;font-weight:500}
+.si:hover{background:var(--bg-hover);color:var(--text1)}
+.si.on{background:var(--amber-dim);color:var(--amber)}
+.si .ic{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.si .lb{flex:1}
+.sbadge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.5px}
+.sbadge.live{background:#ef444422;color:#ef4444}
+.sbadge.ai{background:#3b82f622;color:#3b82f6}
+.sbadge.new{background:#22c55e22;color:#22c55e}
+.sb-foot{margin-top:auto;padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.sb-av{width:30px;height:30px;border-radius:50%;background:var(--amber-dim);border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--amber);flex-shrink:0}
+.sb-un{font-size:12px;font-weight:600}
+.sb-ur{font-size:10px;color:var(--text2)}
 
-    /* Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 1px;
-      height: calc(100vh - 53px);
-      background: #0a3a1a;
-    }
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#topbar{background:#111;border-bottom:1px solid var(--border);padding:0 22px;height:50px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.top-title{font-size:15px;font-weight:700}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.chip{display:flex;align-items:center;gap:5px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text2);transition:all .3s}
+.chip .dot{width:6px;height:6px;border-radius:50%}
+.chip.on{color:var(--green)}.chip.on .dot{background:var(--green)}
+.chip.off{color:var(--red)}.chip.off .dot{background:var(--red)}
+#clock{font-size:11px;color:var(--text3)}
 
-    .panel {
-      background: #020a06;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .panel-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid #0a3a1a;
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      color: #00ff88;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    .panel-header .badge {
-      background: #0a3a1a;
-      color: #337755;
-      padding: 2px 8px;
-      border-radius: 3px;
-      font-size: 10px;
-      font-weight: 400;
-    }
-    .panel-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 16px;
-    }
-    .panel-body::-webkit-scrollbar { width: 4px; }
-    .panel-body::-webkit-scrollbar-track { background: #020a06; }
-    .panel-body::-webkit-scrollbar-thumb { background: #0a3a1a; border-radius: 2px; }
+#content{flex:1;overflow-y:auto;padding:22px}
 
-    /* Panel 1: Agents */
-    .agent-row {
-      display: flex;
-      align-items: center;
-      padding: 5px 0;
-      border-bottom: 1px solid #071a0e;
-      gap: 10px;
-    }
-    .agent-row:last-child { border-bottom: none; }
-    .agent-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .agent-dot.active { background: #00ff88; box-shadow: 0 0 6px #00ff88; }
-    .agent-dot.inactive { background: #333; }
-    .agent-dot.pending { background: #ffcc00; box-shadow: 0 0 6px #ffcc0055; }
-    .agent-level {
-      color: #337755;
-      font-size: 10px;
-      width: 24px;
-      flex-shrink: 0;
-    }
-    .agent-name {
-      flex: 1;
-      font-size: 11px;
-      color: #88ccaa;
-    }
-    .agent-desc {
-      color: #335544;
-      font-size: 10px;
-      text-align: right;
-    }
+/* ── COMPONENTES ── */
+.page{display:none}.page.active{display:block}
+.ph{margin-bottom:22px}
+.ph h1{font-size:20px;font-weight:700}
+.ph p{font-size:12px;color:var(--text2);margin-top:4px}
 
-    /* Panel 2: Chats */
-    .chat-card {
-      background: #071a0e;
-      border: 1px solid #0a3a1a;
-      border-radius: 4px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .chat-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .chat-card-name {
-      font-weight: 700;
-      font-size: 12px;
-    }
-    .chat-card-time {
-      color: #337755;
-      font-size: 10px;
-    }
-    .chat-card-summary {
-      color: #88ccaa;
-      font-size: 11px;
-      margin-bottom: 8px;
-    }
-    .chat-progress-bar {
-      height: 4px;
-      background: #0a3a1a;
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-    .chat-progress-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.5s;
-    }
-    .chat-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .chat-tag {
-      background: #0a3a1a;
-      color: #337755;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 9px;
-    }
+.kgrid{display:grid;gap:12px;margin-bottom:22px}
+.k4{grid-template-columns:repeat(4,1fr)}
+.k3{grid-template-columns:repeat(3,1fr)}
+.k2{grid-template-columns:repeat(2,1fr)}
+.kcard{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.kicon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:14px}
+.kval{font-size:28px;font-weight:700;line-height:1;margin-bottom:5px}
+.klbl{font-size:11px;color:var(--text2);font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.kcard.a .kicon{background:var(--amber-dim)}.kcard.a .kval{color:var(--amber)}
+.kcard.g .kicon{background:var(--green-dim)}.kcard.g .kval{color:var(--green)}
+.kcard.b .kicon{background:var(--blue-dim)}.kcard.b .kval{color:var(--blue)}
+.kcard.y .kicon{background:var(--yellow-dim)}.kcard.y .kval{color:var(--yellow)}
+.kcard.p .kicon{background:var(--purple-dim)}.kcard.p .kval{color:var(--purple)}
 
-    /* Panel 3: Chat Central */
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 16px;
-    }
-    .chat-messages::-webkit-scrollbar { width: 4px; }
-    .chat-messages::-webkit-scrollbar-track { background: #020a06; }
-    .chat-messages::-webkit-scrollbar-thumb { background: #0a3a1a; border-radius: 2px; }
-    .msg {
-      margin-bottom: 12px;
-      padding: 8px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-    .msg.system {
-      background: #071a0e;
-      color: #337755;
-      border-left: 2px solid #00ff88;
-    }
-    .msg.user {
-      background: #0a2a16;
-      color: #00ff88;
-      border-left: 2px solid #00ff88;
-    }
-    .msg.assistant {
-      background: #071a0e;
-      color: #88ccaa;
-      border-left: 2px solid #337755;
-    }
-    .msg.error {
-      background: #1a0a0a;
-      color: #ff4444;
-      border-left: 2px solid #ff4444;
-    }
-    .chat-input-area {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      border-top: 1px solid #0a3a1a;
-      flex-shrink: 0;
-    }
-    .chat-input-area input {
-      flex: 1;
-      background: #071a0e;
-      border: 1px solid #0a3a1a;
-      color: #00ff88;
-      padding: 8px 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      border-radius: 3px;
-      outline: none;
-    }
-    .chat-input-area input::placeholder { color: #335544; }
-    .chat-input-area input:focus { border-color: #00ff88; }
-    .chat-input-area button {
-      background: #00ff88;
-      color: #020a06;
-      border: none;
-      padding: 8px 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .chat-input-area button:hover { background: #33ffaa; }
-    .quick-cmds {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 8px 16px;
-      border-top: 1px solid #0a3a1a;
-      flex-shrink: 0;
-    }
-    .quick-cmd {
-      background: #0a3a1a;
-      color: #337755;
-      border: none;
-      padding: 3px 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .quick-cmd:hover { color: #00ff88; background: #0d4a22; }
+.stitle{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.stag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700}
 
-    /* Panel 4: Control */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .kpi-card {
-      background: #071a0e;
-      border: 1px solid #0a3a1a;
-      border-radius: 4px;
-      padding: 10px;
-      text-align: center;
-    }
-    .kpi-value {
-      font-size: 22px;
-      font-weight: 700;
-      color: #00ff88;
-    }
-    .kpi-label {
-      font-size: 9px;
-      color: #337755;
-      letter-spacing: 1px;
-      margin-top: 2px;
-    }
-    .kpi-card.loading .kpi-value { color: #335544; }
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:14px 16px;margin-bottom:8px}
+.card:last-child{margin-bottom:0}
 
-    .action-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-    .action-btn {
-      background: #0a3a1a;
-      color: #00ff88;
-      border: 1px solid #0d4a22;
-      padding: 6px 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-    }
-    .action-btn:hover { background: #0d4a22; border-color: #00ff88; }
-    .action-btn.running {
-      color: #ffcc00;
-      border-color: #ffcc00;
-      animation: pulse 1s infinite;
-    }
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot.active{background:var(--green);box-shadow:0 0 5px var(--green)}
+.dot.inactive{background:var(--text3)}
+.dot.pending{background:var(--yellow)}
+.dot.error{background:var(--red)}
 
-    .sys-log {
-      background: #030d07;
-      border: 1px solid #0a3a1a;
-      border-radius: 4px;
-      padding: 8px;
-      max-height: 180px;
-      overflow-y: auto;
-      font-size: 10px;
-      color: #335544;
-    }
-    .sys-log::-webkit-scrollbar { width: 4px; }
-    .sys-log::-webkit-scrollbar-track { background: #030d07; }
-    .sys-log::-webkit-scrollbar-thumb { background: #0a3a1a; }
-    .sys-log .log-line { padding: 2px 0; border-bottom: 1px solid #071a0e; }
-    .sys-log .log-line:last-child { border-bottom: none; }
-    .sys-log .log-time { color: #224433; }
-    .sys-log .log-ok { color: #00ff88; }
-    .sys-log .log-warn { color: #ffcc00; }
-    .sys-log .log-err { color: #ff4444; }
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;margin:2px 2px 2px 0}
+.tag.a{background:var(--amber-dim);color:var(--amber)}
+.tag.g{background:var(--green-dim);color:var(--green)}
+.tag.b{background:var(--blue-dim);color:var(--blue)}
+.tag.gr{background:#2a2a2a;color:var(--text2)}
+.tag.y{background:var(--yellow-dim);color:var(--yellow)}
 
-    .section-label {
-      font-size: 10px;
-      color: #337755;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
+.tr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px}
+.tr:last-child{border-bottom:none}
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        height: auto;
-      }
-      .panel { min-height: 400px; }
-    }
-  </style>
+.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;border:1px solid transparent;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn-a{background:var(--amber);color:#fff}.btn-a:hover{background:#d4691a}
+.btn-o{background:transparent;color:var(--text2);border-color:var(--border)}.btn-o:hover{border-color:var(--amber);color:var(--amber)}
+.bsm{padding:5px 11px;font-size:11px}
+
+/* ── HERO (visão geral) ── */
+.hero{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:22px;display:flex;align-items:center;gap:16px}
+.hero-ic{width:48px;height:48px;border-radius:12px;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.hero-title{font-size:18px;font-weight:700}
+.hero-sub{font-size:12px;color:var(--text2);margin-top:3px}
+.hero-desc{font-size:13px;color:var(--text2);margin-top:8px;line-height:1.6}
+.hero-desc span{color:var(--amber);font-weight:500}
+
+/* ── AGENTES ── */
+.ac{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:11px;margin-bottom:5px;transition:border .15s}
+.ac:hover{border-color:var(--border2)}
+.al{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.5px;flex-shrink:0}
+.al.l0{background:var(--purple-dim);color:var(--purple)}
+.al.l1{background:var(--amber-dim);color:var(--amber)}
+.al.l2{background:var(--blue-dim);color:var(--blue)}
+.al.l3{background:var(--green-dim);color:var(--green)}
+
+/* ── CHAT ── */
+#page-chat.active{display:flex;flex-direction:column;height:calc(100vh - 50px - 44px)}
+#chat-wrap{flex:1;display:flex;flex-direction:column;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+#chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;flex-direction:column}
+.msg-u{align-items:flex-end}
+.msg-a{align-items:flex-start}
+.msg-from{font-size:10px;color:var(--text3);margin-bottom:3px;letter-spacing:.5px}
+.bubble{max-width:82%;padding:10px 13px;border-radius:10px;font-size:12px;line-height:1.7}
+.msg-u .bubble{background:var(--amber);color:#fff;border-radius:10px 10px 2px 10px}
+.msg-a .bubble{background:var(--bg-card2);border:1px solid var(--border);border-radius:2px 10px 10px 10px}
+.bubble code{background:#0e0e0e;color:var(--amber);padding:1px 4px;border-radius:3px;font-size:11px}
+.bubble pre{background:#0e0e0e;padding:8px;border-radius:5px;overflow-x:auto;margin:5px 0;font-size:11px;color:#7affb0}
+.bubble strong{color:#fff}
+.mtime{font-size:9px;color:var(--text3);margin-top:3px}
+.cq{display:flex;gap:5px;padding:9px 12px;flex-wrap:wrap;border-top:1px solid var(--border);background:var(--bg-card2)}
+.qb{background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:4px 9px;font-size:11px;font-family:var(--font);transition:all .15s}
+.qb:hover{border-color:var(--amber);color:var(--amber)}
+.cir{display:flex;gap:8px;padding:11px 12px;border-top:1px solid var(--border);background:#111}
+#cinput{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text1);padding:9px 12px;font-size:12px;outline:none;font-family:var(--font)}
+#cinput:focus{border-color:var(--amber)}
+#sbtn{background:var(--amber);border:none;color:#fff;border-radius:8px;padding:0 18px;font-size:12px;font-weight:600;transition:background .15s}
+#sbtn:hover{background:#d4691a}
+#sbtn:disabled{opacity:.4;cursor:not-allowed}
+.typing{color:var(--text3);font-size:11px}
+
+/* ── PROGRESS ── */
+.pb{height:3px;background:var(--border);border-radius:2px;margin-top:10px}
+.pf{height:100%;border-radius:2px;transition:width .5s}
+</style>
 </head>
 <body>
+<div id="app">
 
-  <div class="header">
-    <h1>▸ IGAMING-MASTER-FLOW</h1>
-    <div class="meta">
-      <span class="status-dot"></span>ONLINE &nbsp;|&nbsp;
-      v<span id="hdr-version">1.0.0</span> &nbsp;|&nbsp;
-      AGENTES: <span id="hdr-active">1</span>/<span id="hdr-total">23</span> &nbsp;|&nbsp;
-      <span id="hdr-clock"></span>
+<!-- ══ SIDEBAR ══ -->
+<div id="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">⚡</div>
+    <div>
+      <div class="sb-logo-name">IGAMING MASTER</div>
+      <div class="sb-logo-sub">Pipeline de Leads</div>
     </div>
   </div>
 
-  <div class="grid">
+  <div class="sb-sec">PRINCIPAL</div>
+  <div class="si on" data-page="overview"><span class="ic">⊞</span><span class="lb">Visão Geral</span></div>
+  <div class="si" data-page="pipeline"><span class="ic">⟶</span><span class="lb">Pipeline</span><span class="sbadge live">LIVE</span></div>
+  <div class="si" data-page="metrics"><span class="ic">▲</span><span class="lb">Métricas</span></div>
 
-    <!-- Panel 1: Saúde dos Agentes -->
-    <div class="panel">
-      <div class="panel-header">
-        ◈ SAÚDE DOS AGENTES
-        <span class="badge" id="agents-count">23 AGENTES</span>
-      </div>
-      <div class="panel-body" id="agents-panel"></div>
+  <div class="sb-sec">OPERACIONAL</div>
+  <div class="si" data-page="agents"><span class="ic">◎</span><span class="lb">Agentes</span></div>
+  <div class="si" data-page="chats"><span class="ic">◈</span><span class="lb">Memória dos Chats</span></div>
+  <div class="si" data-page="control"><span class="ic">⚙</span><span class="lb">Controle</span></div>
+
+  <div class="sb-sec">COMANDO</div>
+  <div class="si" data-page="chat"><span class="ic">▶</span><span class="lb">Chat Central</span><span class="sbadge ai">AI</span></div>
+  <div class="si" data-page="config"><span class="ic">⊟</span><span class="lb">Configurações</span></div>
+
+  <div class="sb-foot">
+    <div class="sb-av">00</div>
+    <div><div class="sb-un">00BABY</div><div class="sb-ur">Operador Master</div></div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+  <div id="topbar">
+    <div class="top-title" id="ttitle">Visão Geral</div>
+    <div class="top-right">
+      <div class="chip" id="chip-sb"><span class="dot"></span>SUPABASE</div>
+      <div class="chip" id="chip-n8n"><span class="dot"></span>N8N</div>
+      <div id="clock"></div>
     </div>
+  </div>
 
-    <!-- Panel 2: Memória dos Chats -->
-    <div class="panel">
-      <div class="panel-header">
-        ◈ MEMÓRIA DOS CHATS
-        <span class="badge" id="chats-count">4 CHATS</span>
-      </div>
-      <div class="panel-body" id="chats-panel"></div>
-    </div>
+  <div id="content">
 
-    <!-- Panel 3: Chat Central -->
-    <div class="panel" style="display:flex;flex-direction:column;">
-      <div class="panel-header">
-        ◈ CHAT CENTRAL
-        <span class="badge">CLAUDE API</span>
+    <!-- VISÃO GERAL -->
+    <div class="page active" id="page-overview">
+      <div class="hero">
+        <div class="hero-ic">⚡</div>
+        <div>
+          <div class="hero-title">Bem-vindo, 00BABY</div>
+          <div class="hero-sub">IGAMING-MASTER-FLOW — Pipeline de Extração de Leads iGaming</div>
+          <div class="hero-desc">Acesse as <span>métricas do pipeline</span> e dos <span>agentes</span>, monitore grupos coletados e gerencie toda a operação.</div>
+        </div>
       </div>
-      <div class="chat-messages" id="chat-messages"></div>
-      <div class="quick-cmds">
-        <button class="quick-cmd" data-cmd="/status">/status</button>
-        <button class="quick-cmd" data-cmd="/grupos">/grupos</button>
-        <button class="quick-cmd" data-cmd="/leads">/leads</button>
-        <button class="quick-cmd" data-cmd="/workflows">/workflows</button>
-        <button class="quick-cmd" data-cmd="/agentes">/agentes</button>
-        <button class="quick-cmd" data-cmd="/plano">/plano</button>
-        <button class="quick-cmd" data-cmd="/kpis">/kpis</button>
+      <div class="kgrid k4">
+        <div class="kcard a"><div class="kicon">📡</div><div class="kval" id="ov-g">—</div><div class="klbl">Grupos Coletados</div></div>
+        <div class="kcard g"><div class="kicon">✓</div><div class="kval" id="ov-v">—</div><div class="klbl">Grupos Válidos</div></div>
+        <div class="kcard b"><div class="kicon">👤</div><div class="kval" id="ov-l">—</div><div class="klbl">Leads Extraídos</div></div>
+        <div class="kcard y"><div class="kicon">⚡</div><div class="kval">1/23</div><div class="klbl">Agentes Ativos</div></div>
       </div>
-      <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Digite um comando ou mensagem..." />
-        <button id="chat-send">ENVIAR</button>
-      </div>
-    </div>
-
-    <!-- Panel 4: Central de Controle -->
-    <div class="panel">
-      <div class="panel-header">
-        ◈ CENTRAL DE CONTROLE
-        <span class="badge">SUPABASE + N8N</span>
-      </div>
-      <div class="panel-body">
-        <div class="section-label">▸ KPIs SUPABASE</div>
-        <div class="kpi-grid">
-          <div class="kpi-card loading" id="kpi-raw">
-            <div class="kpi-value">—</div>
-            <div class="kpi-label">RAW GROUPS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div class="stitle">Status do Sistema</div>
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot active"></span><div><div style="font-weight:600;font-size:12px">Supabase</div><div style="font-size:11px;color:var(--text2)">Banco de dados principal</div></div></div>
+            <span class="tag g" id="sb-tag">—</span>
           </div>
-          <div class="kpi-card loading" id="kpi-valid">
-            <div class="kpi-value">—</div>
-            <div class="kpi-label">VALID GROUPS</div>
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot active"></span><div><div style="font-weight:600;font-size:12px">n8n</div><div style="font-size:11px;color:var(--text2)">Plataforma de automação</div></div></div>
+            <span class="tag b" id="n8n-tag">—</span>
           </div>
-          <div class="kpi-card loading" id="kpi-leads">
-            <div class="kpi-value">—</div>
-            <div class="kpi-label">MASTER LEADS</div>
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot pending"></span><div><div style="font-weight:600;font-size:12px">Discord Bot</div><div style="font-size:11px;color:var(--text2)">Token pendente de renovação</div></div></div>
+            <span class="tag a">Pendente</span>
           </div>
-          <div class="kpi-card loading" id="kpi-lote">
-            <div class="kpi-value">—</div>
-            <div class="kpi-label">LOTE CONTROL</div>
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot inactive"></span><div><div style="font-weight:600;font-size:12px">TGStat API</div><div style="font-size:11px;color:var(--text2)">Integração pendente</div></div></div>
+            <span class="tag gr">Inativo</span>
           </div>
         </div>
-
-        <div class="section-label">▸ AÇÕES N8N</div>
-        <div class="action-buttons">
-          <button class="action-btn" data-webhook="scout">▶ SCOUT</button>
-          <button class="action-btn" data-webhook="extrator">▶ EXTRATOR</button>
-          <button class="action-btn" data-webhook="validador">▶ VALIDADOR</button>
+        <div>
+          <div class="stitle">Próximas Etapas</div>
+          <div class="card">
+            <div class="tr"><span style="font-size:14px">🔧</span><div style="flex:1"><div style="font-weight:600;font-size:12px">Discord token renovação</div><div style="font-size:11px;color:var(--text2)">Bot iGaming Scout</div></div><span class="tag a">Alta</span></div>
+            <div class="tr"><span style="font-size:14px">🔌</span><div style="flex:1"><div style="font-weight:600;font-size:12px">TGStat API integração</div><div style="font-size:11px;color:var(--text2)">Substitui Disboard/Reddit</div></div><span class="tag a">Alta</span></div>
+            <div class="tr"><span style="font-size:14px">🤖</span><div style="flex:1"><div style="font-weight:600;font-size:12px">Ativar AGENTE SCOUT</div><div style="font-size:11px;color:var(--text2)">Primeiro lote de extração</div></div><span class="tag b">Média</span></div>
+            <div class="tr" style="border:none"><span style="font-size:14px">📊</span><div style="flex:1"><div style="font-weight:600;font-size:12px">KPI Tracker online</div><div style="font-size:11px;color:var(--text2)">Métricas em tempo real</div></div><span class="tag gr">Baixa</span></div>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <div class="section-label">▸ SYSTEM LOG</div>
-        <div class="sys-log" id="sys-log">
-          <div class="log-line"><span class="log-time">[INIT]</span> <span class="log-ok">Dashboard carregado</span></div>
+    <!-- PIPELINE -->
+    <div class="page" id="page-pipeline">
+      <div class="ph"><h1>Pipeline de Leads</h1><p>Funil completo: Descoberta → Validação → Extração → Leads</p></div>
+      <div class="kgrid k4">
+        <div class="kcard a"><div class="kicon">📡</div><div class="kval" id="pp-r">—</div><div class="klbl">Raw Groups</div></div>
+        <div class="kcard g"><div class="kicon">✓</div><div class="kval" id="pp-v">—</div><div class="klbl">Valid Groups</div></div>
+        <div class="kcard b"><div class="kicon">📦</div><div class="kval" id="pp-lo">—</div><div class="klbl">Lotes Gerados</div></div>
+        <div class="kcard p"><div class="kicon">👤</div><div class="kval" id="pp-l">—</div><div class="klbl">Master Leads</div></div>
+      </div>
+      <div class="stitle">Funil Visual</div>
+      <div style="display:flex;gap:4px;align-items:stretch;margin-bottom:22px">
+        <div class="card" style="flex:1;text-align:center;border-top:3px solid var(--amber)"><div style="font-size:22px;font-weight:700;color:var(--amber)" id="f-r">—</div><div style="font-size:10px;color:var(--text2);margin-top:4px">RAW GROUPS</div><div style="font-size:10px;color:var(--amber);margin-top:4px">100%</div></div>
+        <div style="display:flex;align-items:center;color:var(--text3);font-size:20px">›</div>
+        <div class="card" style="flex:1;text-align:center;border-top:3px solid var(--green)"><div style="font-size:22px;font-weight:700;color:var(--green)" id="f-v">—</div><div style="font-size:10px;color:var(--text2);margin-top:4px">VALIDADOS</div><div style="font-size:10px;color:var(--green);margin-top:4px" id="f-vp">—%</div></div>
+        <div style="display:flex;align-items:center;color:var(--text3);font-size:20px">›</div>
+        <div class="card" style="flex:1;text-align:center;border-top:3px solid var(--blue)"><div style="font-size:22px;font-weight:700;color:var(--blue)" id="f-lo">—</div><div style="font-size:10px;color:var(--text2);margin-top:4px">LOTES</div><div style="font-size:10px;color:var(--blue);margin-top:4px">Em processo</div></div>
+        <div style="display:flex;align-items:center;color:var(--text3);font-size:20px">›</div>
+        <div class="card" style="flex:1;text-align:center;border-top:3px solid var(--purple)"><div style="font-size:22px;font-weight:700;color:var(--purple)" id="f-l">—</div><div style="font-size:10px;color:var(--text2);margin-top:4px">LEADS</div><div style="font-size:10px;color:var(--purple);margin-top:4px">Extraídos</div></div>
+      </div>
+      <div class="stitle">Fontes de Dados</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div class="card" style="border-top:2px solid var(--amber)"><div style="font-weight:700;margin-bottom:6px">Telegram</div><div style="font-size:11px;color:var(--text2)">API Bot @SlizMentorBot</div><div style="margin-top:8px"><span class="tag g">Ativo</span></div></div>
+        <div class="card" style="border-top:2px solid var(--text3)"><div style="font-weight:700;margin-bottom:6px">Discord</div><div style="font-size:11px;color:var(--text2)">iGaming Scout Bot</div><div style="margin-top:8px"><span class="tag a">Token Pendente</span></div></div>
+        <div class="card" style="border-top:2px solid var(--blue)"><div style="font-weight:700;margin-bottom:6px">TGStat API</div><div style="font-size:11px;color:var(--text2)">api.tgstat.ru/channels</div><div style="margin-top:8px"><span class="tag gr">Pendente</span></div></div>
+      </div>
+    </div>
+
+    <!-- MÉTRICAS -->
+    <div class="page" id="page-metrics">
+      <div class="ph"><h1>Métricas</h1><p>KPIs consolidados do pipeline</p></div>
+      <div class="kgrid k3">
+        <div class="kcard a"><div class="kicon">📊</div><div class="kval" id="mt-g">—</div><div class="klbl">Total Grupos</div></div>
+        <div class="kcard g"><div class="kicon">✓</div><div class="kval" id="mt-t">—%</div><div class="klbl">Taxa Validação</div></div>
+        <div class="kcard b"><div class="kicon">👤</div><div class="kval" id="mt-l">—</div><div class="klbl">Leads Totais</div></div>
+      </div>
+      <div class="stitle">Verticals iGaming <span class="stag" style="background:var(--amber-dim);color:var(--amber)">6 VERTICALS</span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div class="card" style="display:flex;align-items:center;gap:11px"><div style="width:36px;height:36px;background:#f59e0b22;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">🎰</div><div><div style="font-weight:600">Slots</div><div style="font-size:11px;color:var(--text2)">COPY-SLOTS</div></div><span class="tag a" style="margin-left:auto">Pendente</span></div>
+        <div class="card" style="display:flex;align-items:center;gap:11px"><div style="width:36px;height:36px;background:#3b82f622;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">🃏</div><div><div style="font-weight:600">Casino</div><div style="font-size:11px;color:var(--text2)">COPY-CASINO</div></div><span class="tag a" style="margin-left:auto">Pendente</span></div>
+        <div class="card" style="display:flex;align-items:center;gap:11px"><div style="width:36px;height:36px;background:#22c55e22;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">✈️</div><div><div style="font-weight:600">Aviator</div><div style="font-size:11px;color:var(--text2)">COPY-AVIATOR</div></div><span class="tag a" style="margin-left:auto">Pendente</span></div>
+        <div class="card" style="display:flex;align-items:center;gap:11px"><div style="width:36px;height:36px;background:#a855f722;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">⚽</div><div><div style="font-weight:600">Sports Bet</div><div style="font-size:11px;color:var(--text2)">COPY-SPORTS</div></div><span class="tag a" style="margin-left:auto">Pendente</span></div>
+        <div class="card" style="display:flex;align-items:center;gap:11px"><div style="width:36px;height:36px;background:#ef444422;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">♠️</div><div><div style="font-weight:600">Poker</div><div style="font-size:11px;color:var(--text2)">COPY-POKER</div></div><span class="tag a" style="margin-left:auto">Pendente</span></div>
+        <div class="card" style="display:flex;align-items:center;gap:11px"><div style="width:36px;height:36px;background:#eab30822;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">💣</div><div><div style="font-weight:600">Mines</div><div style="font-size:11px;color:var(--text2)">COPY-MINES</div></div><span class="tag a" style="margin-left:auto">Pendente</span></div>
+      </div>
+    </div>
+
+    <!-- AGENTES -->
+    <div class="page" id="page-agents">
+      <div class="ph"><h1>Agentes</h1><p>23 documentados — 1 ativo · 6 pendentes · 16 inativos</p></div>
+      <div id="agents-list"></div>
+    </div>
+
+    <!-- MEMÓRIA DOS CHATS -->
+    <div class="page" id="page-chats">
+      <div class="ph"><h1>Memória dos Chats</h1><p>Estado atual de cada chat do projeto</p></div>
+      <div id="chats-list"></div>
+    </div>
+
+    <!-- CONTROLE -->
+    <div class="page" id="page-control">
+      <div class="ph"><h1>Central de Controle</h1><p>Ações diretas no pipeline via n8n webhooks</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div class="stitle">Ações do Pipeline</div>
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE SCOUT</div><div style="font-size:11px;color:var(--text2)">Inicia descoberta de grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('scout','as')"><span id="as">▶ Iniciar</span></button></div>
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE EXTRATOR</div><div style="font-size:11px;color:var(--text2)">Extrai leads dos grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('extrator','ae')"><span id="ae">▶ Iniciar</span></button></div>
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">AGENTE VALIDADOR</div><div style="font-size:11px;color:var(--text2)">Valida e segmenta grupos</div></div><button class="btn btn-o bsm" onclick="trigN8n('validador','av')"><span id="av">▶ Iniciar</span></button></div>
+          <div class="card" style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:600;margin-bottom:3px">Atualizar Métricas</div><div style="font-size:11px;color:var(--text2)">Recarrega dados do Supabase</div></div><button class="btn btn-a bsm" onclick="loadData()">↻ Refresh</button></div>
+        </div>
+        <div>
+          <div class="stitle">System Log</div>
+          <div class="card" style="padding:10px"><div id="slog" style="max-height:270px;overflow-y:auto;font-size:11px;font-family:monospace"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT CENTRAL -->
+    <div class="page" id="page-chat">
+      <div id="chat-wrap">
+        <div id="chat-msgs"></div>
+        <div class="cq">
+          <button class="qb" onclick="qc('/status')">/status</button>
+          <button class="qb" onclick="qc('/grupos')">/grupos</button>
+          <button class="qb" onclick="qc('/leads')">/leads</button>
+          <button class="qb" onclick="qc('/workflows')">/workflows</button>
+          <button class="qb" onclick="qc('/agentes')">/agentes</button>
+          <button class="qb" onclick="qc('/plano')">/plano</button>
+          <button class="qb" onclick="qc('/kpis')">/kpis</button>
+        </div>
+        <div class="cir">
+          <input id="cinput" placeholder="Comando ou pergunta... (Enter para enviar)" onkeydown="hk(event)"/>
+          <button id="sbtn" onclick="sendChat()">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
+    <div class="page" id="page-config">
+      <div class="ph"><h1>Configurações</h1><p>Credenciais e parâmetros do sistema</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div class="stitle">Conexões</div>
+          <div class="card"><div style="font-weight:600;margin-bottom:10px">Supabase</div><div style="font-size:11px;color:var(--text2);margin-bottom:5px">URL</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace;word-break:break-all">https://bunxyoekblzyblpqlodk.supabase.co</div><div style="font-size:11px;color:var(--text2);margin:10px 0 6px">Tabelas</div><div><span class="tag gr">raw_groups</span><span class="tag gr">valid_groups</span><span class="tag gr">lote_control</span><span class="tag gr">master_leads</span><span class="tag gr">kpi_tracker</span></div></div>
+          <div class="card"><div style="font-weight:600;margin-bottom:10px">n8n</div><div style="font-size:11px;color:var(--text2);margin-bottom:5px">URL</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace">https://bekas00.app.n8n.cloud</div></div>
+        </div>
+        <div>
+          <div class="stitle">Projeto</div>
+          <div class="card">
+            <div class="tr"><span style="color:var(--text2);flex:1">Nome</span><span>IGAMING-MASTER-FLOW</span></div>
+            <div class="tr"><span style="color:var(--text2);flex:1">Versão</span><span>1.0.0</span></div>
+            <div class="tr"><span style="color:var(--text2);flex:1">Agentes</span><span>23 documentados</span></div>
+            <div class="tr"><span style="color:var(--text2);flex:1">n8n nós</span><span>105+</span></div>
+            <div class="tr" style="border:none"><span style="color:var(--text2);flex:1">GitHub</span><a href="https://github.com/Msliz00/igaming-master-flow" style="color:var(--blue);font-size:11px">igaming-master-flow ↗</a></div>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
+</div>
+</div>
 
-  <script src="config.js"></script>
-  <script src="data.js"></script>
-  <script>
-    // ====== UTILITIES ======
-    function ts() {
-      return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }
+<script>
+const CFG={
+  supabase:{url:'https://bunxyoekblzyblpqlodk.supabase.co',key:'sb_secret_f7Wm2dgQoDKT7DayEqv69g_9vD1gkMX'},
+  n8n:{url:'https://bekas00.app.n8n.cloud',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjODM4ZjI2OC02NjYxLTRiMjktYjlkMS00NzBjOTdjYWRkN2QiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiM2YzNDI2ZWQtMTk1NS00MzNlLTg4NmEtZjQ1NDMzZjVlZGQ4IiwiaWF0IjoxNzczOTYwNzk3LCJleHAiOjE3NzY0ODEyMDB9.1orOYxWosfiAx1HkW_6X_vZNHYMcih5pYt5ks2-Jfuo',wh:{scout:'/webhook/scout-trigger',extrator:'/webhook/extrator-trigger',validador:'/webhook/validador-trigger'}},
+  claude:{model:'claude-sonnet-4-20250514',sys:'Você é o AGENTE SISTEMA do IGAMING-MASTER-FLOW. Pipeline iGaming de extração de leads. 175 grupos no Supabase. 23 agentes, nenhum ativo. n8n 105+ nós. Responda em pt-BR, técnico e direto.'}
+};
+const AGENTS=[
+  {name:'AGENTE SISTEMA',level:'L0',desc:'Dashboard e memória central',status:'active'},
+  {name:'AGENTE ORQUESTRADOR',level:'L0',desc:'Orquestração geral',status:'inactive'},
+  {name:'AGENTE SCOUT',level:'L1',desc:'Descoberta de grupos',status:'inactive'},
+  {name:'AGENTE SCHEDULER',level:'L1',desc:'Agendamento de tarefas',status:'inactive'},
+  {name:'AGENTE VALIDADOR',level:'L2',desc:'Validação e segmentação',status:'inactive'},
+  {name:'AGENTE EXTRATOR',level:'L2',desc:'Extração de leads',status:'inactive'},
+  {name:'AGENTE CLASSIFIER',level:'L2',desc:'Classificação de leads',status:'inactive'},
+  {name:'AGENTE SCORER',level:'L2',desc:'Score de leads',status:'inactive'},
+  {name:'AGENTE MONITOR-TG',level:'L2',desc:'Monitor Telegram',status:'inactive'},
+  {name:'AGENTE MONITOR-DC',level:'L2',desc:'Monitor Discord',status:'inactive'},
+  {name:'AGENTE MONITOR-RD',level:'L2',desc:'Monitor Reddit',status:'inactive'},
+  {name:'AGENTE KPI-TRACKER',level:'L2',desc:'Rastreamento de KPIs',status:'inactive'},
+  {name:'AGENTE RELATORIO',level:'L2',desc:'Geração de relatórios',status:'inactive'},
+  {name:'AGENTE DATA-MANAGER',level:'L3',desc:'Persistência de dados',status:'inactive'},
+  {name:'AGENTE COPY-SLOTS',level:'L3',desc:'Copy para slots',status:'pending'},
+  {name:'AGENTE COPY-CASINO',level:'L3',desc:'Copy para casino',status:'pending'},
+  {name:'AGENTE COPY-AVIATOR',level:'L3',desc:'Copy para aviator',status:'pending'},
+  {name:'AGENTE COPY-SPORTS',level:'L3',desc:'Copy para sports bet',status:'pending'},
+  {name:'AGENTE COPY-POKER',level:'L3',desc:'Copy para poker',status:'pending'},
+  {name:'AGENTE COPY-MINES',level:'L3',desc:'Copy para mines',status:'pending'},
+  {name:'AGENTE OUTREACH-1',level:'L3',desc:'Outreach canal 1',status:'inactive'},
+  {name:'AGENTE OUTREACH-2',level:'L3',desc:'Outreach canal 2',status:'inactive'},
+  {name:'AGENTE CLEANUP',level:'L3',desc:'Limpeza de dados',status:'inactive'},
+];
+const CHATS=[
+  {name:'CHAT · WORKFLOW',color:'#ea781e',status:'active',time:'Hoje',p:65,sum:'Workflow com 105+ nós no n8n. Structured Output Parser configurado. Merge node em Append mode.',tags:['n8n','105 nós','GPT-4o']},
+  {name:'CHAT · SISTEMA',color:'#22c55e',status:'active',time:'Agora',p:80,sum:'Dashboard no ar. Visual painel clipadores. Chat Claude API ativo. GitHub Pages + Supabase integrados.',tags:['Dashboard','GitHub Pages','Claude API']},
+  {name:'CHAT · AGENTES',color:'#eab308',status:'pending',time:'Ontem',p:30,sum:'23 agentes documentados. Discord token pendente. TGStat API integração pendente.',tags:['23 Agentes','Discord','TGStat']},
+  {name:'CHAT · COPY',color:'#3b82f6',status:'inactive',time:'Pendente',p:10,sum:'Copy por vertical: Slots, Casino, Aviator, Sports, Poker, Mines. Aguardando leads.',tags:['6 Verticals','Copy AI']},
+];
+const TITLES={overview:'Visão Geral',pipeline:'Pipeline',metrics:'Métricas',agents:'Agentes',chats:'Memória dos Chats',control:'Central de Controle',chat:'Chat Central',config:'Configurações'};
 
-    function sysLog(msg, type = 'ok') {
-      const log = document.getElementById('sys-log');
-      const line = document.createElement('div');
-      line.className = 'log-line';
-      line.innerHTML = `<span class="log-time">[${ts()}]</span> <span class="log-${type}">${msg}</span>`;
-      log.appendChild(line);
-      log.scrollTop = log.scrollHeight;
-    }
+// NAV
+document.querySelectorAll('.si').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const pg=el.dataset.page;
+    document.querySelectorAll('.si').forEach(i=>i.classList.remove('on'));
+    el.classList.add('on');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    const target=document.getElementById('page-'+pg);
+    target.classList.add('active');
+    document.getElementById('ttitle').textContent=TITLES[pg]||pg;
+    if(pg==='chat')target.style.cssText='display:flex;flex-direction:column;height:calc(100vh - 50px - 44px)';
+  });
+});
 
-    // ====== HEADER CLOCK ======
-    function updateClock() {
-      document.getElementById('hdr-clock').textContent = ts();
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-    document.getElementById('hdr-version').textContent = IGAMING_CONFIG.project.version;
-    document.getElementById('hdr-active').textContent = IGAMING_CONFIG.project.activeAgents;
-    document.getElementById('hdr-total').textContent = IGAMING_CONFIG.project.totalAgents;
+// UTILS
+function ts(){return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
+function slog(msg,t='inf'){
+  const el=document.getElementById('slog');if(!el)return;
+  const d=document.createElement('div');
+  const c={ok:'#22c55e',err:'#ef4444',inf:'#555',wrn:'#eab308'};
+  d.style.cssText=`color:${c[t]};padding:2px 0;border-bottom:1px solid #1a1a1a`;
+  d.innerHTML=`<span style="color:#333">[${ts()}]</span> ${msg}`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
 
-    // ====== PANEL 1: AGENTS ======
-    function renderAgents() {
-      const panel = document.getElementById('agents-panel');
-      panel.innerHTML = '';
-      AGENTS_DATA.forEach(a => {
-        const row = document.createElement('div');
-        row.className = 'agent-row';
-        row.innerHTML = `
-          <div class="agent-dot ${a.status}"></div>
-          <div class="agent-level">${a.level}</div>
-          <div class="agent-name">${a.name}</div>
-          <div class="agent-desc">${a.desc}</div>
-        `;
-        panel.appendChild(row);
-      });
-      const active = AGENTS_DATA.filter(a => a.status === 'active').length;
-      const pending = AGENTS_DATA.filter(a => a.status === 'pending').length;
-      document.getElementById('agents-count').textContent =
-        `${active} ATIVO · ${pending} PENDENTE · ${AGENTS_DATA.length} TOTAL`;
-    }
-    renderAgents();
+// SUPABASE
+async function sb(table,params=''){
+  try{const r=await fetch(`${CFG.supabase.url}/rest/v1/${table}?${params}`,{headers:{'apikey':CFG.supabase.key,'Authorization':`Bearer ${CFG.supabase.key}`,'Prefer':'count=exact'}});const count=r.headers.get('content-range')?.split('/')[1]??'?';return{data:await r.json(),count,ok:r.ok};}
+  catch(e){return{data:[],count:'ERR',ok:false,error:e.message}}
+}
+async function n8nq(path){
+  try{const r=await fetch(`${CFG.n8n.url}/api/v1/${path}`,{headers:{'X-N8N-API-KEY':CFG.n8n.key}});return{data:await r.json(),ok:r.ok};}
+  catch(e){return{data:null,ok:false,error:e.message}}
+}
 
-    // ====== PANEL 2: CHATS ======
-    function renderChats() {
-      const panel = document.getElementById('chats-panel');
-      panel.innerHTML = '';
-      CHATS_DATA.forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'chat-card';
-        card.innerHTML = `
-          <div class="chat-card-header">
-            <span class="chat-card-name" style="color:${c.color}">${c.name}</span>
-            <span class="chat-card-time">${c.time}</span>
-          </div>
-          <div class="chat-progress-bar">
-            <div class="chat-progress-fill" style="width:${c.progress}%;background:${c.color}"></div>
-          </div>
-          <div class="chat-card-summary">${c.summary}</div>
-          <div class="chat-tags">
-            ${c.tags.map(t => `<span class="chat-tag">${t}</span>`).join('')}
-          </div>
-        `;
-        panel.appendChild(card);
-      });
-    }
-    renderChats();
+async function loadData(){
+  slog('Carregando dados...','inf');
+  const[raw,valid,lotes,leads,wf]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('valid_groups','select=id&limit=1'),sb('lote_control','select=id&limit=1'),sb('master_leads','select=id&limit=1'),n8nq('workflows')]);
+  // chips
+  const sbOk=raw.ok||valid.ok;
+  document.getElementById('chip-sb').className=`chip ${sbOk?'on':'off'}`;
+  document.getElementById('chip-n8n').className=`chip ${wf.ok?'on':'off'}`;
+  set('sb-tag',sbOk?`Online`:'Offline');
+  set('n8n-tag',wf.ok?`${wf.data?.data?.length??0} workflows`:'Offline');
+  slog(`Supabase: ${sbOk?'online':'offline'}`,sbOk?'ok':'err');
+  slog(`n8n: ${wf.ok?'online':'offline'}`,wf.ok?'ok':'err');
+  // valores
+  const r=raw.count,v=valid.count,l=leads.count,lo=lotes.count;
+  ['ov-g','mt-g','f-r'].forEach(id=>set(id,r));
+  ['ov-v','f-v'].forEach(id=>set(id,v));
+  ['ov-l','mt-l','pp-l','f-l'].forEach(id=>set(id,l));
+  set('pp-r',r);set('pp-v',v);['pp-lo','f-lo'].forEach(id=>set(id,lo));
+  const taxa=(r!='ERR'&&r!='?'&&v!='ERR'&&v!='?')?Math.round(parseInt(v||0)/parseInt(r||1)*100)+'%':'—%';
+  set('mt-t',taxa);set('f-vp',taxa);
+  slog('Dados atualizados.','ok');
+}
 
-    // ====== PANEL 3: CHAT CENTRAL ======
-    function addMsg(text, type = 'system') {
-      const msgs = document.getElementById('chat-messages');
-      const div = document.createElement('div');
-      div.className = `msg ${type}`;
-      div.textContent = text;
-      msgs.appendChild(div);
-      msgs.scrollTop = msgs.scrollHeight;
-    }
-
-    addMsg('Sistema IGAMING-MASTER-FLOW inicializado. Digite um comando ou mensagem.', 'system');
-
-    // Quick commands
-    const quickCommands = {
-      '/status': 'Mostre o status geral do sistema IGAMING-MASTER-FLOW: agentes ativos, KPIs, e saúde dos workflows.',
-      '/grupos': 'Liste os grupos iGaming descobertos, quantidade total em raw_groups e valid_groups.',
-      '/leads': 'Mostre estatísticas de leads: total em master_leads, leads por vertical, score médio.',
-      '/workflows': 'Descreva os workflows ativos no n8n, quantidade de nós, e status de cada um.',
-      '/agentes': 'Liste todos os 23 agentes do sistema, seu nível (L0-L3), e status atual.',
-      '/plano': 'Apresente o plano estratégico atual do pipeline iGaming e próximos passos.',
-      '/kpis': 'Mostre os KPIs principais: grupos descobertos, leads extraídos, taxa de conversão, score médio.',
-    };
-
-    document.querySelectorAll('.quick-cmd').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const cmd = btn.dataset.cmd;
-        document.getElementById('chat-input').value = cmd;
-        sendChat();
-      });
+// RENDER
+function renderAgents(){
+  const secs={'NÚCLEO (L0-L1)':['L0','L1'],'PIPELINE (L2)':['L2'],'ESPECIALISTAS (L3)':['L3']};
+  let h='';
+  for(const[s,lvls] of Object.entries(secs)){
+    h+=`<div class="stitle">${s}</div>`;
+    AGENTS.filter(a=>lvls.includes(a.level)).forEach(a=>{
+      const sc={active:'g',pending:'a',inactive:'gr'};
+      const sl={active:'Ativo',pending:'Pendente',inactive:'Inativo'};
+      h+=`<div class="ac"><span class="dot ${a.status}"></span><span class="al ${a.level.toLowerCase()}">${a.level}</span><div style="flex:1"><div style="font-size:12px;font-weight:600">${a.name}</div><div style="font-size:11px;color:var(--text2)">${a.desc}</div></div><span class="tag ${sc[a.status]}">${sl[a.status]}</span></div>`;
     });
+  }
+  document.getElementById('agents-list').innerHTML=h;
+}
+function renderChats(){
+  let h='';
+  CHATS.forEach(c=>{
+    const tags=c.tags.map(t=>`<span class="tag gr">${t}</span>`).join('');
+    const sc={active:'g',pending:'y',inactive:'gr'};
+    const sl={active:'Ativo',pending:'Pendente',inactive:'Inativo'};
+    h+=`<div class="card" style="border-left:3px solid ${c.color}"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:8px;height:8px;border-radius:50%;background:${c.color}"></div><div style="font-weight:700;flex:1">${c.name}</div><span style="font-size:11px;color:var(--text3)">${c.time}</span><span class="tag ${sc[c.status]}">${sl[c.status]}</span></div><div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px">${c.sum}</div><div>${tags}</div><div class="pb"><div class="pf" style="width:${c.p}%;background:${c.color}"></div></div></div>`;
+  });
+  document.getElementById('chats-list').innerHTML=h;
+}
 
-    document.getElementById('chat-send').addEventListener('click', sendChat);
-    document.getElementById('chat-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') sendChat();
-    });
+// N8N
+async function trigN8n(agent,btnId){
+  const btn=document.getElementById(btnId);if(btn)btn.textContent='Executando...';
+  try{const r=await fetch(`${CFG.n8n.url}${CFG.n8n.wh[agent]}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agent})});const ok=r.ok||r.status===200;if(btn)btn.textContent=ok?'✓ Enviado':'✗ Erro';slog(`${agent}: ${ok?'ok':'erro'}`,ok?'ok':'err');}
+  catch(e){if(btn)btn.textContent='✗ Erro';slog(`${agent}: ${e.message}`,'err');}
+  setTimeout(()=>{if(btn)btn.textContent='▶ Iniciar'},4000);
+}
 
-    async function sendChat() {
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
-      if (!text) return;
-      input.value = '';
-
-      addMsg(text, 'user');
-
-      const prompt = quickCommands[text] || text;
-
-      try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': IGAMING_CONFIG.supabase.key,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true',
-          },
-          body: JSON.stringify({
-            model: IGAMING_CONFIG.claude.model,
-            max_tokens: 1024,
-            system: 'Você é o assistente do sistema IGAMING-MASTER-FLOW. Responda de forma concisa e técnica em português. Use dados do contexto quando disponível.',
-            messages: [{ role: 'user', content: prompt }],
-          }),
-        });
-
-        if (!resp.ok) {
-          const err = await resp.text();
-          addMsg(`Erro API: ${resp.status} — ${err}`, 'error');
-          sysLog(`Chat API erro: ${resp.status}`, 'err');
-          return;
-        }
-
-        const data = await resp.json();
-        const reply = data.content?.[0]?.text || 'Sem resposta.';
-        addMsg(reply, 'assistant');
-        sysLog('Resposta Claude recebida');
-      } catch (e) {
-        addMsg(`Erro de conexão: ${e.message}`, 'error');
-        sysLog(`Chat erro: ${e.message}`, 'err');
-      }
+// CHAT
+const hist=[];
+function addMsg(role,text){
+  const w=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className=`msg msg-${role==='user'?'u':'a'}`;
+  if(role!=='user'){const f=document.createElement('div');f.className='msg-from';f.textContent='AGENTE SISTEMA';d.appendChild(f);}
+  const b=document.createElement('div');b.className='bubble';
+  b.innerHTML=text.replace(/```[\w]*\n?([\s\S]*?)```/g,'<pre><code>$1</code></pre>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+  d.appendChild(b);const t=document.createElement('div');t.className='mtime';t.textContent=ts();d.appendChild(t);
+  w.appendChild(d);w.scrollTop=w.scrollHeight;
+}
+async function runCmd(c){
+  const cmd=c.trim().toLowerCase();
+  if(cmd==='/status'){const[g,l,wf]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('master_leads','select=id&limit=1'),n8nq('workflows')]);return `📊 **STATUS — ${ts()}**\n\nSupabase: ${g.ok?'🟢 ONLINE':'🔴 OFFLINE'} | raw_groups: ${g.count} | leads: ${l.count}\nn8n: ${wf.ok?'🟢 ONLINE':'🔴 OFFLINE'} | workflows: ${wf.ok?(wf.data?.data?.length??0):'ERR'}\nAgentes: 1/23 ativos`;}
+  if(cmd==='/grupos'){const r=await sb('raw_groups','select=*&limit=5&order=created_at.desc');if(!r.ok)return`❌ ${r.error}`;const lines=r.data.slice(0,5).map((g,i)=>`${i+1}. ${g.title||g.name||g.username||g.id}`).join('\n');return `📋 **GRUPOS — Total: ${r.count}**\n\n${lines||'Sem dados'}`;}
+  if(cmd==='/leads'){const r=await sb('master_leads','select=*&limit=2');return `🎯 **LEADS — Total: ${r.count}**\n\n${r.data.length>0?JSON.stringify(r.data[0],null,2):'Tabela vazia — pipeline não executado ainda.'}`;}
+  if(cmd==='/workflows'){const r=await n8nq('workflows');if(!r.ok)return`❌ n8n offline`;const wfs=r.data?.data||[];return `⚙️ **WORKFLOWS — ${wfs.length} total**\n\n${wfs.map(w=>`• ${w.active?'🟢':'⚫'} ${w.name}`).join('\n')||'Nenhum'}`;}
+  if(cmd==='/agentes'){const act=AGENTS.filter(a=>a.status==='active'),pend=AGENTS.filter(a=>a.status==='pending');return `🤖 **AGENTES — ${AGENTS.length} total**\n\n🟢 Ativos (${act.length}): ${act.map(a=>a.name).join(', ')}\n🟡 Pendentes (${pend.length}): ${pend.map(a=>a.name).join(', ')}\n⚫ Inativos: ${AGENTS.length-act.length-pend.length}`;}
+  if(cmd==='/plano')return `🗺️ **PLANO**\n\n✅ Supabase + n8n + Dashboard no ar\n⏳ Discord token · TGStat API · GitHub Phase 1\n🚀 SCOUT ativo · Extração · KPI Tracker`;
+  if(cmd==='/kpis'){const[r,v,l,lo]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('valid_groups','select=id&limit=1'),sb('master_leads','select=id&limit=1'),sb('lote_control','select=id&limit=1')]);return `📊 **KPIs**\nraw_groups: ${r.count} | valid_groups: ${v.count}\nmaster_leads: ${l.count} | lotes: ${lo.count}\nTaxa: ${r.ok&&v.ok?Math.round(parseInt(v.count||0)/parseInt(r.count||1)*100)+'%':'N/A'}`;}
+  return null;
+}
+async function sendChat(){
+  const inp=document.getElementById('cinput');const text=inp.value.trim();if(!text)return;
+  const btn=document.getElementById('sbtn');inp.value='';btn.disabled=true;
+  addMsg('user',text);
+  const tp=document.createElement('div');tp.className='typing msg msg-a';tp.innerHTML='<div class="bubble" style="background:transparent;border:none;color:var(--text3)">▋ processando...</div>';
+  document.getElementById('chat-msgs').appendChild(tp);document.getElementById('chat-msgs').scrollTop=99999;
+  try{
+    const cmd=await runCmd(text);tp.remove();
+    if(cmd)addMsg('assistant',cmd);
+    else{
+      hist.push({role:'user',content:text});
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:CFG.claude.model,max_tokens:1000,system:CFG.claude.sys,messages:hist})});
+      const data=await r.json();if(data.error)throw new Error(data.error.message);
+      const reply=data.content[0].text;hist.push({role:'assistant',content:reply});
+      if(hist.length>20)hist.splice(0,2);addMsg('assistant',reply);
     }
+  }catch(e){tp.remove();addMsg('assistant',`❌ ${e.message}`);}
+  btn.disabled=false;inp.focus();
+}
+function qc(cmd){document.getElementById('cinput').value=cmd;document.getElementById('cinput').focus();}
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
 
-    // ====== PANEL 4: CONTROL ======
+// RELÓGIO
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
-    // Supabase KPI fetch
-    async function fetchKPI(table, elementId) {
-      try {
-        const resp = await fetch(
-          `${IGAMING_CONFIG.supabase.url}/rest/v1/${table}?select=*&limit=0`,
-          {
-            method: 'HEAD',
-            headers: {
-              'apikey': IGAMING_CONFIG.supabase.key,
-              'Authorization': `Bearer ${IGAMING_CONFIG.supabase.key}`,
-              'Prefer': 'count=exact',
-            },
-          }
-        );
-        const count = resp.headers.get('content-range');
-        const total = count ? count.split('/')[1] : '0';
-        const card = document.getElementById(elementId);
-        card.querySelector('.kpi-value').textContent = total;
-        card.classList.remove('loading');
-        sysLog(`KPI ${table}: ${total} registros`);
-      } catch (e) {
-        const card = document.getElementById(elementId);
-        card.querySelector('.kpi-value').textContent = 'ERR';
-        sysLog(`KPI ${table} erro: ${e.message}`, 'err');
-      }
-    }
-
-    function refreshKPIs() {
-      fetchKPI(IGAMING_CONFIG.supabase.tables.rawGroups, 'kpi-raw');
-      fetchKPI(IGAMING_CONFIG.supabase.tables.validGroups, 'kpi-valid');
-      fetchKPI(IGAMING_CONFIG.supabase.tables.masterLeads, 'kpi-leads');
-      fetchKPI(IGAMING_CONFIG.supabase.tables.loteControl, 'kpi-lote');
-    }
-    refreshKPIs();
-    setInterval(refreshKPIs, IGAMING_CONFIG.refreshInterval * 1000);
-
-    // N8N action buttons
-    document.querySelectorAll('.action-btn[data-webhook]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const wh = btn.dataset.webhook;
-        const url = IGAMING_CONFIG.n8n.url + IGAMING_CONFIG.n8n.webhooks[wh];
-        btn.classList.add('running');
-        btn.textContent = `⟳ ${wh.toUpperCase()}...`;
-        sysLog(`Disparando webhook: ${wh}`, 'warn');
-
-        try {
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${IGAMING_CONFIG.n8n.key}`,
-            },
-            body: JSON.stringify({ source: 'dashboard', timestamp: new Date().toISOString() }),
-          });
-
-          if (resp.ok) {
-            sysLog(`Webhook ${wh}: sucesso (${resp.status})`, 'ok');
-          } else {
-            sysLog(`Webhook ${wh}: erro (${resp.status})`, 'err');
-          }
-        } catch (e) {
-          sysLog(`Webhook ${wh}: falha — ${e.message}`, 'err');
-        }
-
-        btn.classList.remove('running');
-        btn.textContent = `▶ ${wh.toUpperCase()}`;
-      });
-    });
-
-    sysLog('Dashboard inicializado com sucesso');
-  </script>
-
+// BOOT
+(async()=>{
+  updateClock();setInterval(updateClock,1000);
+  renderAgents();renderChats();
+  addMsg('assistant','🟢 **SISTEMA ONLINE**\n\nBem-vindo, 00BABY. Carregando dados do Supabase e n8n...');
+  await loadData();
+  setInterval(loadData,60000);
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IGAMING-MASTER-FLOW · Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #020a06;
+      color: #00ff88;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid #0a3a1a;
+      background: #030d07;
+    }
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .header .meta {
+      color: #337755;
+      font-size: 11px;
+    }
+    .header .meta span { color: #00ff88; }
+    .header .status-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #00ff88;
+      margin-right: 6px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1px;
+      height: calc(100vh - 53px);
+      background: #0a3a1a;
+    }
+
+    .panel {
+      background: #020a06;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #0a3a1a;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #00ff88;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .panel-header .badge {
+      background: #0a3a1a;
+      color: #337755;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 400;
+    }
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-track { background: #020a06; }
+    .panel-body::-webkit-scrollbar-thumb { background: #0a3a1a; border-radius: 2px; }
+
+    /* Panel 1: Agents */
+    .agent-row {
+      display: flex;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid #071a0e;
+      gap: 10px;
+    }
+    .agent-row:last-child { border-bottom: none; }
+    .agent-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .agent-dot.active { background: #00ff88; box-shadow: 0 0 6px #00ff88; }
+    .agent-dot.inactive { background: #333; }
+    .agent-dot.pending { background: #ffcc00; box-shadow: 0 0 6px #ffcc0055; }
+    .agent-level {
+      color: #337755;
+      font-size: 10px;
+      width: 24px;
+      flex-shrink: 0;
+    }
+    .agent-name {
+      flex: 1;
+      font-size: 11px;
+      color: #88ccaa;
+    }
+    .agent-desc {
+      color: #335544;
+      font-size: 10px;
+      text-align: right;
+    }
+
+    /* Panel 2: Chats */
+    .chat-card {
+      background: #071a0e;
+      border: 1px solid #0a3a1a;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .chat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chat-card-name {
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .chat-card-time {
+      color: #337755;
+      font-size: 10px;
+    }
+    .chat-card-summary {
+      color: #88ccaa;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+    .chat-progress-bar {
+      height: 4px;
+      background: #0a3a1a;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .chat-progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s;
+    }
+    .chat-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .chat-tag {
+      background: #0a3a1a;
+      color: #337755;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 9px;
+    }
+
+    /* Panel 3: Chat Central */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-track { background: #020a06; }
+    .chat-messages::-webkit-scrollbar-thumb { background: #0a3a1a; border-radius: 2px; }
+    .msg {
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .msg.system {
+      background: #071a0e;
+      color: #337755;
+      border-left: 2px solid #00ff88;
+    }
+    .msg.user {
+      background: #0a2a16;
+      color: #00ff88;
+      border-left: 2px solid #00ff88;
+    }
+    .msg.assistant {
+      background: #071a0e;
+      color: #88ccaa;
+      border-left: 2px solid #337755;
+    }
+    .msg.error {
+      background: #1a0a0a;
+      color: #ff4444;
+      border-left: 2px solid #ff4444;
+    }
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid #0a3a1a;
+      flex-shrink: 0;
+    }
+    .chat-input-area input {
+      flex: 1;
+      background: #071a0e;
+      border: 1px solid #0a3a1a;
+      color: #00ff88;
+      padding: 8px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      border-radius: 3px;
+      outline: none;
+    }
+    .chat-input-area input::placeholder { color: #335544; }
+    .chat-input-area input:focus { border-color: #00ff88; }
+    .chat-input-area button {
+      background: #00ff88;
+      color: #020a06;
+      border: none;
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .chat-input-area button:hover { background: #33ffaa; }
+    .quick-cmds {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px 16px;
+      border-top: 1px solid #0a3a1a;
+      flex-shrink: 0;
+    }
+    .quick-cmd {
+      background: #0a3a1a;
+      color: #337755;
+      border: none;
+      padding: 3px 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .quick-cmd:hover { color: #00ff88; background: #0d4a22; }
+
+    /* Panel 4: Control */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .kpi-card {
+      background: #071a0e;
+      border: 1px solid #0a3a1a;
+      border-radius: 4px;
+      padding: 10px;
+      text-align: center;
+    }
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #00ff88;
+    }
+    .kpi-label {
+      font-size: 9px;
+      color: #337755;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    .kpi-card.loading .kpi-value { color: #335544; }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .action-btn {
+      background: #0a3a1a;
+      color: #00ff88;
+      border: 1px solid #0d4a22;
+      padding: 6px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+    }
+    .action-btn:hover { background: #0d4a22; border-color: #00ff88; }
+    .action-btn.running {
+      color: #ffcc00;
+      border-color: #ffcc00;
+      animation: pulse 1s infinite;
+    }
+
+    .sys-log {
+      background: #030d07;
+      border: 1px solid #0a3a1a;
+      border-radius: 4px;
+      padding: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 10px;
+      color: #335544;
+    }
+    .sys-log::-webkit-scrollbar { width: 4px; }
+    .sys-log::-webkit-scrollbar-track { background: #030d07; }
+    .sys-log::-webkit-scrollbar-thumb { background: #0a3a1a; }
+    .sys-log .log-line { padding: 2px 0; border-bottom: 1px solid #071a0e; }
+    .sys-log .log-line:last-child { border-bottom: none; }
+    .sys-log .log-time { color: #224433; }
+    .sys-log .log-ok { color: #00ff88; }
+    .sys-log .log-warn { color: #ffcc00; }
+    .sys-log .log-err { color: #ff4444; }
+
+    .section-label {
+      font-size: 10px;
+      color: #337755;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        height: auto;
+      }
+      .panel { min-height: 400px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>▸ IGAMING-MASTER-FLOW</h1>
+    <div class="meta">
+      <span class="status-dot"></span>ONLINE &nbsp;|&nbsp;
+      v<span id="hdr-version">1.0.0</span> &nbsp;|&nbsp;
+      AGENTES: <span id="hdr-active">1</span>/<span id="hdr-total">23</span> &nbsp;|&nbsp;
+      <span id="hdr-clock"></span>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Panel 1: Saúde dos Agentes -->
+    <div class="panel">
+      <div class="panel-header">
+        ◈ SAÚDE DOS AGENTES
+        <span class="badge" id="agents-count">23 AGENTES</span>
+      </div>
+      <div class="panel-body" id="agents-panel"></div>
+    </div>
+
+    <!-- Panel 2: Memória dos Chats -->
+    <div class="panel">
+      <div class="panel-header">
+        ◈ MEMÓRIA DOS CHATS
+        <span class="badge" id="chats-count">4 CHATS</span>
+      </div>
+      <div class="panel-body" id="chats-panel"></div>
+    </div>
+
+    <!-- Panel 3: Chat Central -->
+    <div class="panel" style="display:flex;flex-direction:column;">
+      <div class="panel-header">
+        ◈ CHAT CENTRAL
+        <span class="badge">CLAUDE API</span>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="quick-cmds">
+        <button class="quick-cmd" data-cmd="/status">/status</button>
+        <button class="quick-cmd" data-cmd="/grupos">/grupos</button>
+        <button class="quick-cmd" data-cmd="/leads">/leads</button>
+        <button class="quick-cmd" data-cmd="/workflows">/workflows</button>
+        <button class="quick-cmd" data-cmd="/agentes">/agentes</button>
+        <button class="quick-cmd" data-cmd="/plano">/plano</button>
+        <button class="quick-cmd" data-cmd="/kpis">/kpis</button>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Digite um comando ou mensagem..." />
+        <button id="chat-send">ENVIAR</button>
+      </div>
+    </div>
+
+    <!-- Panel 4: Central de Controle -->
+    <div class="panel">
+      <div class="panel-header">
+        ◈ CENTRAL DE CONTROLE
+        <span class="badge">SUPABASE + N8N</span>
+      </div>
+      <div class="panel-body">
+        <div class="section-label">▸ KPIs SUPABASE</div>
+        <div class="kpi-grid">
+          <div class="kpi-card loading" id="kpi-raw">
+            <div class="kpi-value">—</div>
+            <div class="kpi-label">RAW GROUPS</div>
+          </div>
+          <div class="kpi-card loading" id="kpi-valid">
+            <div class="kpi-value">—</div>
+            <div class="kpi-label">VALID GROUPS</div>
+          </div>
+          <div class="kpi-card loading" id="kpi-leads">
+            <div class="kpi-value">—</div>
+            <div class="kpi-label">MASTER LEADS</div>
+          </div>
+          <div class="kpi-card loading" id="kpi-lote">
+            <div class="kpi-value">—</div>
+            <div class="kpi-label">LOTE CONTROL</div>
+          </div>
+        </div>
+
+        <div class="section-label">▸ AÇÕES N8N</div>
+        <div class="action-buttons">
+          <button class="action-btn" data-webhook="scout">▶ SCOUT</button>
+          <button class="action-btn" data-webhook="extrator">▶ EXTRATOR</button>
+          <button class="action-btn" data-webhook="validador">▶ VALIDADOR</button>
+        </div>
+
+        <div class="section-label">▸ SYSTEM LOG</div>
+        <div class="sys-log" id="sys-log">
+          <div class="log-line"><span class="log-time">[INIT]</span> <span class="log-ok">Dashboard carregado</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="data.js"></script>
+  <script>
+    // ====== UTILITIES ======
+    function ts() {
+      return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function sysLog(msg, type = 'ok') {
+      const log = document.getElementById('sys-log');
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `<span class="log-time">[${ts()}]</span> <span class="log-${type}">${msg}</span>`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // ====== HEADER CLOCK ======
+    function updateClock() {
+      document.getElementById('hdr-clock').textContent = ts();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+    document.getElementById('hdr-version').textContent = IGAMING_CONFIG.project.version;
+    document.getElementById('hdr-active').textContent = IGAMING_CONFIG.project.activeAgents;
+    document.getElementById('hdr-total').textContent = IGAMING_CONFIG.project.totalAgents;
+
+    // ====== PANEL 1: AGENTS ======
+    function renderAgents() {
+      const panel = document.getElementById('agents-panel');
+      panel.innerHTML = '';
+      AGENTS_DATA.forEach(a => {
+        const row = document.createElement('div');
+        row.className = 'agent-row';
+        row.innerHTML = `
+          <div class="agent-dot ${a.status}"></div>
+          <div class="agent-level">${a.level}</div>
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-desc">${a.desc}</div>
+        `;
+        panel.appendChild(row);
+      });
+      const active = AGENTS_DATA.filter(a => a.status === 'active').length;
+      const pending = AGENTS_DATA.filter(a => a.status === 'pending').length;
+      document.getElementById('agents-count').textContent =
+        `${active} ATIVO · ${pending} PENDENTE · ${AGENTS_DATA.length} TOTAL`;
+    }
+    renderAgents();
+
+    // ====== PANEL 2: CHATS ======
+    function renderChats() {
+      const panel = document.getElementById('chats-panel');
+      panel.innerHTML = '';
+      CHATS_DATA.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'chat-card';
+        card.innerHTML = `
+          <div class="chat-card-header">
+            <span class="chat-card-name" style="color:${c.color}">${c.name}</span>
+            <span class="chat-card-time">${c.time}</span>
+          </div>
+          <div class="chat-progress-bar">
+            <div class="chat-progress-fill" style="width:${c.progress}%;background:${c.color}"></div>
+          </div>
+          <div class="chat-card-summary">${c.summary}</div>
+          <div class="chat-tags">
+            ${c.tags.map(t => `<span class="chat-tag">${t}</span>`).join('')}
+          </div>
+        `;
+        panel.appendChild(card);
+      });
+    }
+    renderChats();
+
+    // ====== PANEL 3: CHAT CENTRAL ======
+    function addMsg(text, type = 'system') {
+      const msgs = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = `msg ${type}`;
+      div.textContent = text;
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    addMsg('Sistema IGAMING-MASTER-FLOW inicializado. Digite um comando ou mensagem.', 'system');
+
+    // Quick commands
+    const quickCommands = {
+      '/status': 'Mostre o status geral do sistema IGAMING-MASTER-FLOW: agentes ativos, KPIs, e saúde dos workflows.',
+      '/grupos': 'Liste os grupos iGaming descobertos, quantidade total em raw_groups e valid_groups.',
+      '/leads': 'Mostre estatísticas de leads: total em master_leads, leads por vertical, score médio.',
+      '/workflows': 'Descreva os workflows ativos no n8n, quantidade de nós, e status de cada um.',
+      '/agentes': 'Liste todos os 23 agentes do sistema, seu nível (L0-L3), e status atual.',
+      '/plano': 'Apresente o plano estratégico atual do pipeline iGaming e próximos passos.',
+      '/kpis': 'Mostre os KPIs principais: grupos descobertos, leads extraídos, taxa de conversão, score médio.',
+    };
+
+    document.querySelectorAll('.quick-cmd').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cmd = btn.dataset.cmd;
+        document.getElementById('chat-input').value = cmd;
+        sendChat();
+      });
+    });
+
+    document.getElementById('chat-send').addEventListener('click', sendChat);
+    document.getElementById('chat-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendChat();
+    });
+
+    async function sendChat() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      addMsg(text, 'user');
+
+      const prompt = quickCommands[text] || text;
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': IGAMING_CONFIG.supabase.key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({
+            model: IGAMING_CONFIG.claude.model,
+            max_tokens: 1024,
+            system: 'Você é o assistente do sistema IGAMING-MASTER-FLOW. Responda de forma concisa e técnica em português. Use dados do contexto quando disponível.',
+            messages: [{ role: 'user', content: prompt }],
+          }),
+        });
+
+        if (!resp.ok) {
+          const err = await resp.text();
+          addMsg(`Erro API: ${resp.status} — ${err}`, 'error');
+          sysLog(`Chat API erro: ${resp.status}`, 'err');
+          return;
+        }
+
+        const data = await resp.json();
+        const reply = data.content?.[0]?.text || 'Sem resposta.';
+        addMsg(reply, 'assistant');
+        sysLog('Resposta Claude recebida');
+      } catch (e) {
+        addMsg(`Erro de conexão: ${e.message}`, 'error');
+        sysLog(`Chat erro: ${e.message}`, 'err');
+      }
+    }
+
+    // ====== PANEL 4: CONTROL ======
+
+    // Supabase KPI fetch
+    async function fetchKPI(table, elementId) {
+      try {
+        const resp = await fetch(
+          `${IGAMING_CONFIG.supabase.url}/rest/v1/${table}?select=*&limit=0`,
+          {
+            method: 'HEAD',
+            headers: {
+              'apikey': IGAMING_CONFIG.supabase.key,
+              'Authorization': `Bearer ${IGAMING_CONFIG.supabase.key}`,
+              'Prefer': 'count=exact',
+            },
+          }
+        );
+        const count = resp.headers.get('content-range');
+        const total = count ? count.split('/')[1] : '0';
+        const card = document.getElementById(elementId);
+        card.querySelector('.kpi-value').textContent = total;
+        card.classList.remove('loading');
+        sysLog(`KPI ${table}: ${total} registros`);
+      } catch (e) {
+        const card = document.getElementById(elementId);
+        card.querySelector('.kpi-value').textContent = 'ERR';
+        sysLog(`KPI ${table} erro: ${e.message}`, 'err');
+      }
+    }
+
+    function refreshKPIs() {
+      fetchKPI(IGAMING_CONFIG.supabase.tables.rawGroups, 'kpi-raw');
+      fetchKPI(IGAMING_CONFIG.supabase.tables.validGroups, 'kpi-valid');
+      fetchKPI(IGAMING_CONFIG.supabase.tables.masterLeads, 'kpi-leads');
+      fetchKPI(IGAMING_CONFIG.supabase.tables.loteControl, 'kpi-lote');
+    }
+    refreshKPIs();
+    setInterval(refreshKPIs, IGAMING_CONFIG.refreshInterval * 1000);
+
+    // N8N action buttons
+    document.querySelectorAll('.action-btn[data-webhook]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const wh = btn.dataset.webhook;
+        const url = IGAMING_CONFIG.n8n.url + IGAMING_CONFIG.n8n.webhooks[wh];
+        btn.classList.add('running');
+        btn.textContent = `⟳ ${wh.toUpperCase()}...`;
+        sysLog(`Disparando webhook: ${wh}`, 'warn');
+
+        try {
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${IGAMING_CONFIG.n8n.key}`,
+            },
+            body: JSON.stringify({ source: 'dashboard', timestamp: new Date().toISOString() }),
+          });
+
+          if (resp.ok) {
+            sysLog(`Webhook ${wh}: sucesso (${resp.status})`, 'ok');
+          } else {
+            sysLog(`Webhook ${wh}: erro (${resp.status})`, 'err');
+          }
+        } catch (e) {
+          sysLog(`Webhook ${wh}: falha — ${e.message}`, 'err');
+        }
+
+        btn.classList.remove('running');
+        btn.textContent = `▶ ${wh.toUpperCase()}`;
+      });
+    });
+
+    sysLog('Dashboard inicializado com sucesso');
+  </script>
+
+</body>
+</html>

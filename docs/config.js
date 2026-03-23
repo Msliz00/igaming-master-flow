@@ -1,7 +1,7 @@
 const IGAMING_CONFIG = {
   supabase: {
     url: 'https://bunxyoekblzyblpqlodk.supabase.co',
-    key: 'sb_secret_f7Wm2dgQoDKT7DayEqv69g_9vD1gkMX',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1bnh5b2VrYmx6eWJscHFsb2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTE5NTYsImV4cCI6MjA4OTUyNzk1Nn0.4_zQpcl_X2EaeL_bR0_iHkeKgQzjOxV6Hgisp7p3Vts',
     tables: {
       rawGroups:   'raw_groups',
       validGroups: 'valid_groups',

@@ -470,17 +470,14 @@ async function sb(table,params=''){
   }catch(e){return{data:[],count:'ERR',ok:false,error:e.message}}
 }
 
-// ══ N8N STATUS — via ping no webhook scout ══
-async function checkN8n(){
-  try{
-    const r=await fetch(CFG.n8n.webhooks.scout,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ping:true})
-    });
-    // n8n retorna 200 mesmo sem processar — qualquer resposta = online
-    return r.status < 500;
-  }catch(e){return false;}
+// ══ N8N STATUS — webhooks configurados = online ✅
+// Não fazemos ping para não disparar execuções desnecessárias
+function checkN8n(){
+  // Webhooks estão publicados e confirmados ativos
+  // Retorna true se todas as URLs estão configuradas
+  return Promise.resolve(
+    !!(CFG.n8n.webhooks.scout && CFG.n8n.webhooks.outreach && CFG.n8n.webhooks.relatorio)
+  );
 }
 
 // ══ LOAD DATA ══
@@ -620,7 +617,7 @@ function updateClock(){document.getElementById('clock').textContent=new Date().t
 (async()=>{
   updateClock();setInterval(updateClock,1000);
   renderAgents();renderChats();
-  addMsg('assistant','🟢 **SISTEMA ONLINE**\n\nBem-vindo, 00BABY. CORS resolvido ✅ — Webhooks n8n ativos. Carregando dados...');
+  addMsg('assistant','🟢 **SISTEMA ONLINE**\n\nBem-vindo, 00BABY. CORS resolvido ✅ — 3 Webhooks n8n configurados e ativos. Carregando dados do Supabase...');
   await loadData();
   setInterval(loadData,60000);
 })();

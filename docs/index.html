@@ -561,54 +561,237 @@ async function trigN8n(agent, btnId){
   setTimeout(()=>{if(btn)btn.textContent='▶ Iniciar'},4000);
 }
 
-// ══ CHAT ══
+// ══ CHAT CENTRAL — TERMINAL DE COMANDO ══
 const hist=[];
-function addMsg(role,text){
+
+// Renderiza mensagem com suporte a botões de ação
+function addMsg(role, text, actions=[]){
   const w=document.getElementById('chat-msgs');
-  const d=document.createElement('div');d.className=`msg msg-${role==='user'?'u':'a'}`;
-  if(role!=='user'){const f=document.createElement('div');f.className='msg-from';f.textContent='AGENTE SISTEMA';d.appendChild(f);}
+  const d=document.createElement('div');
+  d.className=`msg msg-${role==='user'?'u':'a'}`;
+  if(role!=='user'){
+    const f=document.createElement('div');f.className='msg-from';
+    f.textContent='AGENTE SISTEMA';d.appendChild(f);
+  }
   const b=document.createElement('div');b.className='bubble';
-  b.innerHTML=text.replace(/```[\w]*\n?([\s\S]*?)```/g,'<pre><code>$1</code></pre>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
-  d.appendChild(b);const t=document.createElement('div');t.className='mtime';t.textContent=ts();d.appendChild(t);
+  b.innerHTML=text
+    .replace(/```[\w]*\n?([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
+  d.appendChild(b);
+
+  // Botões de ação contextuais
+  if(actions.length>0){
+    const ab=document.createElement('div');
+    ab.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-top:8px';
+    actions.forEach(a=>{
+      const btn=document.createElement('button');
+      btn.className='btn btn-o bsm';
+      btn.textContent=a.label;
+      btn.onclick=()=>{ qc(a.cmd); if(a.run)sendChat(); };
+      ab.appendChild(btn);
+    });
+    d.appendChild(ab);
+  }
+
+  const t=document.createElement('div');t.className='mtime';t.textContent=ts();
+  d.appendChild(t);
   w.appendChild(d);w.scrollTop=w.scrollHeight;
 }
 
+// Coleta dados do Supabase para contexto da IA
+async function getContextData(){
+  const[raw,valid,leads,lotes,kpi]=await Promise.all([
+    sb('raw_groups','select=id&limit=1'),
+    sb('valid_groups','select=id&limit=1'),
+    sb('master_leads','select=id&limit=1'),
+    sb('lote_control','select=id&limit=1'),
+    sb('kpi_tracker','select=id&limit=1')
+  ]);
+  return {
+    raw_groups: raw.count,
+    valid_groups: valid.count,
+    master_leads: leads.count,
+    lotes: lotes.count,
+    kpi_entries: kpi.count
+  };
+}
+
+// Detecta intenção de ação na resposta da IA
+function detectActions(text){
+  const actions=[];
+  const t=text.toLowerCase();
+  if(t.includes('scout')||t.includes('descoberta'))
+    actions.push({label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true});
+  if(t.includes('outreach')||t.includes('enviar mensagem')||t.includes('dm'))
+    actions.push({label:'▶ Iniciar Outreach', cmd:'iniciar outreach', run:true});
+  if(t.includes('relatório')||t.includes('relatorio'))
+    actions.push({label:'▶ Gerar Relatório', cmd:'iniciar relatorio', run:true});
+  if(t.includes('grupos')||t.includes('raw_groups'))
+    actions.push({label:'📋 Ver Grupos', cmd:'/grupos', run:false});
+  if(t.includes('leads')||t.includes('master_leads'))
+    actions.push({label:'🎯 Ver Leads', cmd:'/leads', run:false});
+  if(t.includes('kpi')||t.includes('métrica')||t.includes('metrica'))
+    actions.push({label:'📊 Ver KPIs', cmd:'/kpis', run:false});
+  return actions.slice(0,3);
+}
+
+// Comandos locais rápidos
 async function runCmd(c){
   const cmd=c.trim().toLowerCase();
+
+  // Status
   if(cmd==='/status'){
-    const[g,l]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('master_leads','select=id&limit=1')]);
-    const n8nOk=await checkN8n();
-    return `📊 **STATUS — ${ts()}**\n\nSupabase: ${g.ok?'🟢 ONLINE':'🔴 OFFLINE'} | raw_groups: ${g.count} | leads: ${l.count}\nn8n: ${n8nOk?'🟢 WEBHOOKS ONLINE':'🔴 OFFLINE'}\nAgentes: 1/23 ativos`;
+    const[g,v,l,lo]=await Promise.all([
+      sb('raw_groups','select=id&limit=1'),
+      sb('valid_groups','select=id&limit=1'),
+      sb('master_leads','select=id&limit=1'),
+      sb('lote_control','select=id&limit=1')
+    ]);
+    return {
+      text:`📊 **STATUS — ${ts()}**\n\nSupabase: 🟢 ONLINE\n• raw_groups: **${g.count}** | valid_groups: **${v.count}**\n• master_leads: **${l.count}** | lotes: **${lo.count}**\n\nn8n: 🟢 WEBHOOKS ONLINE\n• scout | outreach | relatorio\n\nAgentes: 1/23 ativos`,
+      actions:[
+        {label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true},
+        {label:'📊 Ver KPIs', cmd:'/kpis', run:false}
+      ]
+    };
   }
-  if(cmd==='/grupos'){const r=await sb('raw_groups','select=*&limit=5&order=created_at.desc');if(!r.ok)return`❌ ${r.error}`;const lines=r.data.slice(0,5).map((g,i)=>`${i+1}. ${g.title||g.name||g.username||g.id}`).join('\n');return `📋 **GRUPOS — Total: ${r.count}**\n\n${lines||'Sem dados'}`;}
-  if(cmd==='/leads'){const r=await sb('master_leads','select=*&limit=2');return `🎯 **LEADS — Total: ${r.count}**\n\n${r.data.length>0?JSON.stringify(r.data[0],null,2):'Tabela vazia — pipeline não executado ainda.'}`;}
-  if(cmd==='/workflows')return `⚙️ **WORKFLOWS**\n\n🟢 EXTRAÇÃO DE LEAD IGAMING — Publicado\n• 109 nós ativos\n• 3 webhooks online:\n  scout | outreach | relatorio`;
-  if(cmd==='/agentes'){const act=AGENTS.filter(a=>a.status==='active'),pend=AGENTS.filter(a=>a.status==='pending');return `🤖 **AGENTES — ${AGENTS.length} total**\n\n🟢 Ativos (${act.length}): ${act.map(a=>a.name).join(', ')}\n🟡 Pendentes (${pend.length}): ${pend.map(a=>a.name).join(', ')}\n⚫ Inativos: ${AGENTS.length-act.length-pend.length}`;}
-  if(cmd==='/plano')return `🗺️ **PLANO**\n\n✅ Supabase + n8n + Dashboard + CORS resolvido\n⏳ Discord token · TGStat API · GitHub Phase 1\n🚀 SCOUT ativo · Extração · KPI Tracker`;
-  if(cmd==='/kpis'){const[r,v,l,lo]=await Promise.all([sb('raw_groups','select=id&limit=1'),sb('valid_groups','select=id&limit=1'),sb('master_leads','select=id&limit=1'),sb('lote_control','select=id&limit=1')]);return `📊 **KPIs**\nraw_groups: ${r.count} | valid_groups: ${v.count}\nmaster_leads: ${l.count} | lotes: ${lo.count}\nTaxa: ${r.ok&&v.ok?Math.round(parseInt(v.count||0)/parseInt(r.count||1)*100)+'%':'N/A'}`;}
+
+  // Grupos
+  if(cmd==='/grupos'||cmd==='ver grupos'){
+    const r=await sb('raw_groups','select=title,segment,members_count&limit=8&order=members_count.desc');
+    if(!r.ok)return{text:`❌ ${r.error}`,actions:[]};
+    const lines=r.data.slice(0,8).map((g,i)=>`${i+1}. **${g.title||'Sem título'}** — ${g.members_count||0} membros [${g.segment||'GERAL'}]`).join('\n');
+    return{text:`📋 **GRUPOS — Total: ${r.count}**\n\n${lines||'Sem dados'}`,actions:[]};
+  }
+
+  // Leads
+  if(cmd==='/leads'||cmd==='ver leads'){
+    const r=await sb('master_leads','select=*&limit=3&order=extracted_at.desc');
+    if(r.count==='0'||r.data.length===0)
+      return{text:`🎯 **LEADS — Total: 0**\n\nPipeline ainda não extraiu leads. Execute o Scout primeiro.`,
+        actions:[{label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true}]};
+    const lines=r.data.map(l=>`• @${l.username||'?'} — ${l.first_name||''} ${l.last_name||''} [${l.source_group||'?'}]`).join('\n');
+    return{text:`🎯 **LEADS — Total: ${r.count}**\n\n${lines}`,actions:[]};
+  }
+
+  // KPIs
+  if(cmd==='/kpis'||cmd==='ver kpis'){
+    const[r,v,l,lo]=await Promise.all([
+      sb('raw_groups','select=id&limit=1'),
+      sb('valid_groups','select=id&limit=1'),
+      sb('master_leads','select=id&limit=1'),
+      sb('lote_control','select=id&limit=1')
+    ]);
+    const taxa=r.ok&&v.ok?Math.round(parseInt(v.count||0)/Math.max(parseInt(r.count||1),1)*100)+'%':'N/A';
+    return{text:`📊 **KPIs COMPLETOS — ${ts()}**\n\n🔍 raw_groups: **${r.count}**\n✅ valid_groups: **${v.count}**\n📦 lotes: **${lo.count}**\n👤 master_leads: **${l.count}**\n📈 Taxa validação: **${taxa}**`,actions:[]};
+  }
+
+  // Agentes
+  if(cmd==='/agentes'||cmd==='ver agentes'){
+    const act=AGENTS.filter(a=>a.status==='active');
+    const pend=AGENTS.filter(a=>a.status==='pending');
+    const inact=AGENTS.filter(a=>a.status==='inactive');
+    return{text:`🤖 **AGENTES — ${AGENTS.length} total**\n\n🟢 Ativos (${act.length}): ${act.map(a=>a.name).join(', ')}\n🟡 Pendentes (${pend.length}): ${pend.map(a=>a.name).join(', ')}\n⚫ Inativos: ${inact.length}`,actions:[]};
+  }
+
+  // Plano
+  if(cmd==='/plano')
+    return{text:`🗺️ **PLANO IGAMING-MASTER-FLOW**\n\n✅ Dashboard + CORS + Claude API\n✅ Supabase RLS liberado\n✅ Workflow n8n publicado (109 nós)\n\n⏳ Pendente:\n• TELEGRAM_BOT_TOKEN no n8n\n• COMMUNITY_CHAT_ID no n8n\n• Discord bot token\n• TGStat API\n\n🚀 Próximo: configurar env vars para ativar outreach`,
+      actions:[{label:'📋 Ver Status', cmd:'/status', run:false}]};
+
+  // Workflows
+  if(cmd==='/workflows')
+    return{text:`⚙️ **WORKFLOWS n8n**\n\n🟢 EXTRAÇÃO DE LEAD IGAMING\n• 109 nós | Publicado\n• Webhooks:\n  🔵 /igaming-scout\n  🔵 /igaming-outreach\n  🔵 /igaming-relatorio`,
+      actions:[
+        {label:'▶ Scout', cmd:'iniciar scout', run:true},
+        {label:'▶ Outreach', cmd:'iniciar outreach', run:true}
+      ]};
+
+  // Ações diretas
+  if(cmd.includes('iniciar scout')||cmd.includes('rodar scout')||cmd.includes('ativar scout')){
+    const r=await trigN8nChat('scout');
+    return{text:r?`✅ **SCOUT INICIADO**\n\nWebhook disparado com sucesso!\nO pipeline de descoberta está rodando.\n\n⏳ Aguarde ~2-5 minutos para novos grupos aparecerem no Supabase.`:`❌ Falha ao iniciar Scout`,
+      actions:[{label:'📋 Ver Grupos', cmd:'/grupos', run:false}]};
+  }
+  if(cmd.includes('iniciar outreach')||cmd.includes('rodar outreach')){
+    const r=await trigN8nChat('outreach');
+    return{text:r?`✅ **OUTREACH INICIADO**\n\nWebhook de abordagem disparado!\nO pipeline vai processar leads pendentes e enviar convites.`:`❌ Falha ao iniciar Outreach`,actions:[]};
+  }
+  if(cmd.includes('iniciar relatorio')||cmd.includes('gerar relatorio')||cmd.includes('gerar relatório')){
+    const r=await trigN8nChat('relatorio');
+    return{text:r?`✅ **RELATÓRIO SOLICITADO**\n\nAGENTE DATA-MANAGER acionado.\nO relatório será gerado e salvo no Supabase.`:`❌ Falha ao gerar relatório`,actions:[]};
+  }
+
   return null;
 }
 
-async function sendChat(){
-  const inp=document.getElementById('cinput');const text=inp.value.trim();if(!text)return;
-  const btn=document.getElementById('sbtn');inp.value='';btn.disabled=true;
-  addMsg('user',text);
-  const tp=document.createElement('div');tp.className='typing msg msg-a';tp.innerHTML='<div class="bubble" style="background:transparent;border:none;color:var(--text3)">▋ processando...</div>';
-  document.getElementById('chat-msgs').appendChild(tp);document.getElementById('chat-msgs').scrollTop=99999;
+// Dispara webhook e retorna bool
+async function trigN8nChat(agent){
   try{
-    const cmd=await runCmd(text);tp.remove();
-    if(cmd)addMsg('assistant',cmd);
-    else{
+    const r=await fetch(CFG.n8n.webhooks[agent],{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({trigger:agent,source:'chat',ts:new Date().toISOString()})
+    });
+    slog(`Chat → ${agent}: ${r.status<500?'ok':'erro '+r.status}`,r.status<500?'ok':'err');
+    return r.status<500;
+  }catch(e){slog(`Chat → ${agent}: ${e.message}`,'err');return false;}
+}
+
+async function sendChat(){
+  const inp=document.getElementById('cinput');
+  const text=inp.value.trim();if(!text)return;
+  const btn=document.getElementById('sbtn');
+  inp.value='';btn.disabled=true;
+  addMsg('user',text);
+
+  const tp=document.createElement('div');tp.className='typing msg msg-a';
+  tp.innerHTML='<div class="bubble" style="background:transparent;border:none;color:var(--text3)">▋ processando...</div>';
+  document.getElementById('chat-msgs').appendChild(tp);
+  document.getElementById('chat-msgs').scrollTop=99999;
+
+  try{
+    // Tenta comando local primeiro
+    const local=await runCmd(text);
+    tp.remove();
+    if(local){
+      addMsg('assistant', local.text, local.actions||[]);
+    } else {
+      // Manda para Claude com contexto completo
+      const ctx=await getContextData();
+      const sysWithData=CFG.claude.sys+`\n\nDADOS ATUAIS DO SUPABASE:\n- raw_groups: ${ctx.raw_groups}\n- valid_groups: ${ctx.valid_groups}\n- master_leads: ${ctx.master_leads}\n- lotes: ${ctx.lotes}\n\nAÇÕES DISPONÍVEIS:\n- "iniciar scout" → dispara webhook de descoberta\n- "iniciar outreach" → dispara webhook de abordagem\n- "iniciar relatorio" → gera relatório\n- /status /grupos /leads /kpis /agentes /plano\n\nSe o usuário pedir uma ação, instrua-o com o comando exato.`;
+
       hist.push({role:'user',content:text});
-      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':CFG.claude.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:CFG.claude.model,max_tokens:1000,system:CFG.claude.sys,messages:hist})});
-      const data=await r.json();if(data.error)throw new Error(data.error.message);
-      const reply=data.content[0].text;hist.push({role:'assistant',content:reply});
-      if(hist.length>20)hist.splice(0,2);addMsg('assistant',reply);
+      const r=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':CFG.claude.apiKey,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body:JSON.stringify({model:CFG.claude.model,max_tokens:1200,system:sysWithData,messages:hist})
+      });
+      const data=await r.json();
+      if(data.error)throw new Error(data.error.message);
+      const reply=data.content[0].text;
+      hist.push({role:'assistant',content:reply});
+      if(hist.length>20)hist.splice(0,2);
+      const actions=detectActions(reply);
+      addMsg('assistant',reply,actions);
     }
-  }catch(e){tp.remove();addMsg('assistant',`❌ ${e.message}`);}
+  }catch(e){
+    tp.remove();
+    addMsg('assistant',`❌ **Erro:** ${e.message}`,[]);
+  }
   btn.disabled=false;inp.focus();
 }
-function qc(cmd){document.getElementById('cinput').value=cmd;document.getElementById('cinput').focus();}
+
+function qc(cmd){
+  document.getElementById('cinput').value=cmd;
+  document.getElementById('cinput').focus();
+}
 function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
 
 // ══ RELÓGIO ══
@@ -618,7 +801,11 @@ function updateClock(){document.getElementById('clock').textContent=new Date().t
 (async()=>{
   updateClock();setInterval(updateClock,1000);
   renderAgents();renderChats();
-  addMsg('assistant','🟢 **SISTEMA ONLINE**\n\nBem-vindo, 00BABY. CORS resolvido ✅ — 3 Webhooks n8n configurados e ativos. Carregando dados do Supabase...');
+  addMsg('assistant','🟢 **TERMINAL DE COMANDO ONLINE**\n\nBem-vindo, 00BABY. Todos os sistemas ativos.\n\n**Comandos rápidos:** `/status` `/grupos` `/leads` `/kpis`\n**Ações diretas:** `iniciar scout` `iniciar outreach` `iniciar relatorio`\n**Ou pergunte qualquer coisa em linguagem natural.**', [
+    {label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true},
+    {label:'📊 Status', cmd:'/status', run:false},
+    {label:'📋 Grupos', cmd:'/grupos', run:false}
+  ]);
   await loadData();
   setInterval(loadData,60000);
 })();

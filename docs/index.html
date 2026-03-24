@@ -646,6 +646,9 @@ async function trigN8n(agent, btnId){
   setTimeout(()=>{if(btn)btn.textContent='▶ Iniciar'},4000);
 }
 
+// ══ CHAT CENTRAL — TERMINAL DE COMANDO ══
+const hist=[];
+
 // ══ MEMÓRIA PERSISTENTE — Supabase ══
 async function saveMsg(role, content){
   try{

@@ -392,95 +392,10 @@ const CFG = {
       relatorio: 'https://bekas00.app.n8n.cloud/webhook/igaming-relatorio'
     }
   },
-  claude: {
-    model: 'claude-sonnet-4-20250514',
-    apiKey: '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',
-    sys: `Você é o CÉREBRO CENTRAL do IGAMING-MASTER-FLOW. Substitui e unifica 3 chats anteriores: CTO (planejamento estratégico), ENGENHEIRO N8N (workflow técnico) e GERADOR DE PROMPTS (copy e agentes). Operador: 00BABY. Responda SEMPRE em pt-BR, técnico, direto e orientado a ação.
-
-═══ IDENTIDADE DO PROJETO ═══
-Sistema autônomo de extração, segmentação e outreach de leads iGaming do Telegram. Pipeline completo: descoberta → validação → extração → segmentação → outreach → RMKT. Plataforma: n8n cloud (bekas00.app.n8n.cloud). Banco: Supabase. IA: GPT-4o + GPT-4o-mini + Claude. Workflow único ID: fQgzAuSea76eTkug.
-
-═══ INFRAESTRUTURA ATIVA ═══
-Dashboard: https://msliz00.github.io/igaming-master-flow/
-Supabase: https://bunxyoekblzyblpqlodk.supabase.co
-n8n: https://bekas00.app.n8n.cloud
-GitHub: https://github.com/Msliz00/igaming-master-flow
-Webhooks ativos: /webhook/igaming-scout | /webhook/igaming-outreach | /webhook/igaming-relatorio
-Telegram Bot: @SlizMentorBot | MTProto: +5511917503461
-n8n API Key expira: 19/04/2026
-
-═══ WORKFLOW — 109 NÓS ═══
-ETAPA 1 FONTES: Schedule 4min → coleta grupos multi-fonte via HTTP
-ETAPA 2 DESCOBERTA: Normalizar → Filtro Duplicados → Resolver Username → Enriquecer Channel ID → SCOUT_LOG
-ETAPA 3 VALIDAÇÃO: Gerar Lote → Montar Payload → Salvar RAW_GROUPS → Grupo validado? → Salvar VALID_GROUPS
-ETAPA 4 EXTRAÇÃO: HTTP Request4 (MTProto GetParticipants) → Filter Out Bots → Build Member Payload → Normalize Lead Data → master_leads + leads_segmentados
-ETAPA 5 SEGMENTAÇÃO: Switch 15 segmentos: FOOTBALL_STUDIO, JET_X, MINES, FUTEBOL, SLOTS, FORTUNE_TIGER, SPACEMAN, GATES_OLYMPUS, SWEET_BONANZA, BIG_BASS, BLAZE_CRASH, ROLETA, BAC_BO, AVIATOR, CARDS + Fallback
-ETAPA 6 OUTREACH: Read MASTER_LEADS (status=new) → Wait 2min → Create Invite Link → Send DM → Update status=invited
-ETAPA 7 RMKT: New Member Trigger → Welcome → Wait 10s → RMKT#1 → Wait 12h → RMKT#2 CTA → Update status=rmkt
-
-═══ AGENTES IA NO WORKFLOW ═══
-AGENTE SCOUT: GPT-4o-mini | DESATIVADO | normaliza grupos multi-plataforma
-AGENTE ORCHESTRATOR: GPT-4o | sessão igaming_orchestrator2_session | confirma recebimento de lotes
-AGENTE VALIDADOR: GPT-4o-mini | valida relevância e qualidade dos grupos
-AGENTE VALIDADOR1: GPT-4o-mini | sessão igaming_validador1_session | pipeline secundário
-AGENTE EXTRACTOR: GPT-4o | sessão igaming_extractor_session | extrai e processa membros
-AGENTE EXTRACTOR1: GPT-4.1-mini | sessão igaming_extractor1_session | pipeline secundário
-AGENTE DATA-MANAGER: GPT-4o-mini | sessão igaming_datamanager_session | relatório e consolidação
-
-═══ TABELAS SUPABASE ═══
-scout_log: group_id, platform, title, members_count, link, segment, lote_id, found_at
-raw_groups: group_id, platform, title, members_count, link, segment, lote_id, data_extracao, status_raw, status_valid
-valid_groups: group_id, platform, title, members_count, link, segment, lote_id, data_extracao, status_valid
-lote_control: lote_id, data_extracao, status
-master_leads: user_id, username, first_name, last_name, language_code, source_group, segment, lote_id, extracted_at, status, invite_link, invited_at
-leads_segmentados: user_id, username, first_name, last_name, source_group, segment, lote_id, data_extracao, status
-kpi_tracker: user_id, source_group, joined_at, conversion_status
-chat_history: role, content, created_at
-agent_status: agent_name, status, last_run, last_result
-
-═══ BLOQUEIOS CRÍTICOS ═══
-#1 COMMUNITY_CHAT_ID = 0 (placeholder) → outreach inteiro bloqueado
-#2 TELEGRAM_BOT_TOKEN não configurado nas env vars do n8n
-#3 [link CTA] no RMKT#2 é placeholder — substituir pelo link real
-#4 AGENTE SCOUT disabled:true — reativar ou substituir por TGStat API
-
-═══ PENDÊNCIAS POR PRIORIDADE ═══
-ALTA: Configurar COMMUNITY_CHAT_ID + TELEGRAM_BOT_TOKEN nas env vars n8n
-ALTA: Discord bot token renovar (iGaming Scout Bot)
-ALTA: TGStat API integrar (api.tgstat.ru/channels/search)
-MÉDIA: WhatsApp como fonte (Evolution API / Z-API)
-MÉDIA: Tabelas agent_registry, agent_memory, agent_alerts no Supabase
-MÉDIA: GitHub integration Phase 1
-BAIXA: KPI Tracker automático | CRM completo | L0 Diretor Geral
-
-═══ REGRAS TÉCNICAS N8N ═══
-- Input de todo AI Agent: ={{ $input.all() | json }}
-- Require Specific Output Format: SEMPRE habilitado
-- Structured Output Parser com JSON Schema: SEMPRE conectado
-- Single-workflow architecture: NUNCA criar workflows separados
-- Nó Merge: modo Append
-- Testar cada fase antes de avançar
-
-═══ COPIES E PROMPTS ═══
-DM de convite: "Olá, {first_name}! Tenho um grupo exclusivo pra você: {invite_link}"
-Welcome: "Bem-vindo(a), {first_name}! 🔥 Você chegou no lugar certo."
-RMKT#1: "{first_name}, separei algo exclusivo pra você 👇"
-RMKT#2: "{first_name}, pronto para o próximo passo? 👉 [link CTA]"
-Segmentos com copy: AVIATOR, FORTUNE_TIGER, MINES, FUTEBOL, SLOTS, CRASH (aguarda leads reais)
-
-═══ AÇÕES QUE VOCÊ PODE EXECUTAR ═══
-- "iniciar scout" → dispara webhook /igaming-scout
-- "iniciar outreach" → dispara webhook /igaming-outreach  
-- "iniciar relatorio" → dispara webhook /igaming-relatorio
-- /status /grupos /leads /kpis /agentes /plano /workflows
-- Navegar entre abas: "ir para pipeline", "ver agentes", etc.
-- Atualizar dados: "atualizar" ou "refresh"
-- Analisar dados do Supabase e recomendar próximos passos
-- Gerar prompts para agentes do n8n
-- Planejar novas integrações (WhatsApp, TGStat, etc.)
-
-═══ COMPORTAMENTO ═══
-Responda como CTO + Engenheiro N8N + Gerador de Prompts em um só. Quando receber ACTION IA: analise → verifique o que pode adiantar → simule → revise → entregue. Nunca reexplique o que já sabe. Seja direto. Entregue só o necessário para executar.`
+  gemini: {
+    apiKey: 'AIzaSyBH4LKFzp2iUBhF51cbzIiJq6inZVhWbqo',
+    model: 'gemini-1.5-flash',
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
   }
 };
 
@@ -882,7 +797,68 @@ async function runCmd(c){
   return null;
 }
 
-// Dispara webhook — qualquer resposta HTTP = webhook recebido = sucesso
+// ══ MOTOR DE RESPOSTA LOCAL — sem API externa ══
+async function gerarRespostaLocal(text, ctx){
+  const t = text.toLowerCase();
+
+  // Grupos / extração
+  if(t.includes('grupo') || t.includes('extrair') || t.includes('extração') || t.includes('scout')){
+    if(t.includes('0') || t.includes('zero') || t.includes('vazio') || t.includes('problema')){
+      return{text:`🔍 **Diagnóstico — Grupos com 0 leads disponíveis**\n\nDados atuais:\n• raw_groups: **${ctx.raw_groups}** coletados\n• valid_groups: **${ctx.valid_groups}** validados\n• master_leads: **${ctx.master_leads}** extraídos\n\n**Causas prováveis:**\n1. Os grupos foram coletados mas o MTProto não conseguiu buscar os membros (COMMUNITY_CHAT_ID = 0)\n2. Filter Out Bots removeu todos os membros (grupos com só bots)\n3. Chave Supabase incorreta no nó Build Member Payload\n\n**Ação recomendada:**\nConfigurar TELEGRAM_BOT_TOKEN e COMMUNITY_CHAT_ID nas variáveis de ambiente do n8n para desbloquear a extração de membros.`,
+        actions:[{label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true},{label:'📊 Ver KPIs', cmd:'/kpis', run:false}]};
+    }
+    return{text:`📡 **Status da Extração de Grupos**\n\nraw_groups: **${ctx.raw_groups}** | valid_groups: **${ctx.valid_groups}** | leads: **${ctx.master_leads}**\n\nPara iniciar nova coleta: \`iniciar scout\`\nPara ver grupos coletados: \`/grupos\``,
+      actions:[{label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true},{label:'📋 Ver Grupos', cmd:'/grupos', run:false}]};
+  }
+
+  // Bloqueios / problemas
+  if(t.includes('bloqueio') || t.includes('problema') || t.includes('erro') || t.includes('não funciona')){
+    return{text:`🚨 **Bloqueios Críticos do Pipeline**\n\n**#1 — COMMUNITY_CHAT_ID = 0** (CRÍTICO)\nO outreach inteiro está bloqueado. Necessário criar grupo no Telegram e configurar o ID nas env vars do n8n.\n\n**#2 — TELEGRAM_BOT_TOKEN** não configurado\nSem o token, o bot não consegue enviar DMs nem criar invite links.\n\n**#3 — AGENTE SCOUT** desativado\nO nó está com disabled:true. Descoberta acontece via HTTP direto.\n\n**#4 — [link CTA]** no RMKT#2 é placeholder\nPrecisa ser substituído pelo link real da oferta.\n\n**Prioridade #1:** Configurar as env vars no n8n → Settings → Variables`,
+      actions:[{label:'📊 Status Geral', cmd:'/status', run:false}]};
+  }
+
+  // Próximos passos / plano
+  if(t.includes('próximo') || t.includes('proximo') || t.includes('plano') || t.includes('prioridade') || t.includes('fazer')){
+    return{text:`🗺️ **Próximos Passos — Ordem de Prioridade**\n\n🔴 **ALTA**\n1. Configurar COMMUNITY_CHAT_ID + TELEGRAM_BOT_TOKEN no n8n\n2. Renovar token Discord bot (iGaming Scout Bot)\n3. Integrar TGStat API como fonte de grupos\n\n🟡 **MÉDIA**\n4. WhatsApp como fonte (Evolution API / Z-API)\n5. Criar tabelas agent_registry, agent_memory no Supabase\n6. GitHub integration Phase 1\n\n🟢 **BAIXA**\n7. KPI Tracker automático\n8. CRM completo\n9. L0 Diretor Geral`,
+      actions:[{label:'📊 Status', cmd:'/status', run:false},{label:'📋 KPIs', cmd:'/kpis', run:false}]};
+  }
+
+  // Outreach / leads / DM
+  if(t.includes('outreach') || t.includes('dm') || t.includes('mensagem') || t.includes('convite')){
+    return{text:`📤 **Outreach Pipeline**\n\nStatus atual: **BLOQUEADO**\n\nO pipeline de outreach precisa de:\n• TELEGRAM_BOT_TOKEN → para enviar DMs\n• COMMUNITY_CHAT_ID → para criar invite links\n\nFluxo quando desbloqueado:\n1. Lê leads com status=new\n2. Cria invite link único por lead\n3. Envia DM: "Olá, {first_name}! Tenho um grupo exclusivo pra você"\n4. Aguarda entrada → dispara RMKT #1 (10s) → RMKT #2 (12h)`,
+      actions:[{label:'▶ Iniciar Outreach', cmd:'iniciar outreach', run:true}]};
+  }
+
+  // Agentes
+  if(t.includes('agente') || t.includes('ia') || t.includes('gpt')){
+    return{text:`🤖 **Agentes IA do Pipeline**\n\nAtivos no workflow:\n• **ORCHESTRATOR** — GPT-4o | coordena lotes\n• **VALIDADOR** — GPT-4o-mini | aprova/rejeita grupos\n• **EXTRACTOR** — GPT-4o | processa membros\n• **DATA-MANAGER** — GPT-4o-mini | relatórios\n• **SCOUT** — GPT-4o-mini | DESATIVADO\n\nArquitetura planejada: 23 agentes em 5 camadas (L0→L4)\nPendente: Monitor de Saúde (L1), Diretor Geral (L0), 15 agentes de segmento (L4)`,
+      actions:[{label:'🤖 Ver Agentes', cmd:'/agentes', run:false}]};
+  }
+
+  // WhatsApp
+  if(t.includes('whatsapp') || t.includes('zap')){
+    return{text:`📱 **WhatsApp — Integração Planejada**\n\nOpções de API disponíveis:\n• **Evolution API** — open source, integra nativamente com n8n\n• **Z-API** — pago, mais estável\n• **WPPConnect** — open source\n\nRecomendação: **Evolution API** para o nosso stack n8n.\n\nPróximo passo: confirmar qual API você já tem ou prefere, e eu gero o nó n8n pronto para importar.`,
+      actions:[]};
+  }
+
+  // Segmentos / verticais
+  if(t.includes('segmento') || t.includes('vertical') || t.includes('slot') || t.includes('aviator') || t.includes('mines')){
+    return{text:`🎰 **Segmentos iGaming — 15 Verticais**\n\nAtivos no workflow:\nFOOTBALL_STUDIO | JET_X | MINES | FUTEBOL | SLOTS | FORTUNE_TIGER | SPACEMAN | GATES_OLYMPUS | SWEET_BONANZA | BIG_BASS | BLAZE_CRASH | ROLETA | BAC_BO | AVIATOR | CARDS\n\nFallback: GERAL (grupos sem segmento identificado)\n\nCada segmento tem nó próprio salvando em leads_segmentados.\nCopy personalizada por segmento: aguarda primeiro lote de leads reais.`,
+      actions:[{label:'📋 Ver Grupos', cmd:'/grupos', run:false}]};
+  }
+
+  // Supabase / banco / dados
+  if(t.includes('supabase') || t.includes('banco') || t.includes('tabela') || t.includes('dado')){
+    return{text:`🗄️ **Supabase — Estrutura de Dados**\n\nTabelas ativas:\n• scout_log — grupos descobertos\n• raw_groups — **${ctx.raw_groups}** registros\n• valid_groups — **${ctx.valid_groups}** registros\n• lote_control — **${ctx.lotes}** lotes\n• master_leads — **${ctx.master_leads}** leads\n• leads_segmentados — por vertical\n• kpi_tracker — conversões\n• chat_history — memória do chat\n• agent_status — status dos 23 agentes`,
+      actions:[{label:'📊 Ver KPIs', cmd:'/kpis', run:false}]};
+  }
+
+  // Resposta genérica
+  return{text:`💬 **Comando recebido**\n\nNão reconheci um comando específico. Tente:\n\n**Consultas:** \`/status\` \`/grupos\` \`/leads\` \`/kpis\` \`/agentes\`\n**Ações:** \`iniciar scout\` \`iniciar outreach\` \`iniciar relatorio\`\n**Navegação:** \`ir para pipeline\` \`ver agentes\` \`abrir controle\`\n**Tópicos:** \`bloqueios\` \`próximos passos\` \`agentes\` \`segmentos\` \`whatsapp\``,
+    actions:[{label:'📊 Status', cmd:'/status', run:false},{label:'🗺️ Plano', cmd:'/plano', run:false}]};
+}
+
+
 async function trigN8nChat(agent){
   try{
     await fetch(CFG.n8n.webhooks[agent],{
@@ -918,30 +894,61 @@ async function sendChat(){
     if(local){
       addMsg('assistant', local.text, local.actions||[]);
     } else {
-      // Manda para Claude com contexto completo
-      const ctx=await getContextData();
-      const sysWithData=CFG.claude.sys+`\n\nDADOS ATUAIS DO SUPABASE:\n- raw_groups: ${ctx.raw_groups}\n- valid_groups: ${ctx.valid_groups}\n- master_leads: ${ctx.master_leads}\n- lotes: ${ctx.lotes}\n\nAÇÕES DISPONÍVEIS:\n- "iniciar scout" → dispara webhook de descoberta\n- "iniciar outreach" → dispara webhook de abordagem\n- "iniciar relatorio" → gera relatório\n- /status /grupos /leads /kpis /agentes /plano\n\nSe o usuário pedir uma ação, instrua-o com o comando exato.`;
+      // Gemini API — gratuito, inteligência real
+      tp.remove();
+      const ctx = await getContextData();
+      const systemPrompt = `Você é o CÉREBRO CENTRAL do IGAMING-MASTER-FLOW. Operador: 00BABY. Responda SEMPRE em pt-BR, técnico, direto e orientado a ação. Nunca reexplique o que já sabe.
 
-      hist.push({role:'user',content:text});
-      await saveMsg('user',text);
-      const r=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'x-api-key':CFG.claude.apiKey,
-          'anthropic-version':'2023-06-01',
-          'anthropic-dangerous-direct-browser-access':'true'
-        },
-        body:JSON.stringify({model:CFG.claude.model,max_tokens:1200,system:sysWithData,messages:hist})
+PROJETO: Sistema autônomo de extração de leads iGaming do Telegram. Pipeline: descoberta → validação → extração → segmentação → outreach → RMKT. n8n cloud (bekas00.app.n8n.cloud). Supabase. Workflow ID: fQgzAuSea76eTkug. 109 nós.
+
+DADOS ATUAIS DO SUPABASE:
+- raw_groups: ${ctx.raw_groups} grupos coletados
+- valid_groups: ${ctx.valid_groups} grupos válidos
+- master_leads: ${ctx.master_leads} leads extraídos
+- lotes: ${ctx.lotes} lotes processados
+
+BLOQUEIOS CRÍTICOS:
+1. COMMUNITY_CHAT_ID = 0 (placeholder) → outreach bloqueado
+2. TELEGRAM_BOT_TOKEN não configurado nas env vars do n8n
+3. AGENTE SCOUT disabled:true no workflow
+4. [link CTA] no RMKT#2 é placeholder
+
+PENDÊNCIAS: Discord token, TGStat API, WhatsApp (Evolution API), tabelas agent_registry/agent_memory/agent_alerts, GitHub integration Phase 1, CRM completo.
+
+WEBHOOKS ATIVOS: /webhook/igaming-scout | /webhook/igaming-outreach | /webhook/igaming-relatorio
+
+SEGMENTOS: FOOTBALL_STUDIO, JET_X, MINES, FUTEBOL, SLOTS, FORTUNE_TIGER, SPACEMAN, GATES_OLYMPUS, SWEET_BONANZA, BIG_BASS, BLAZE_CRASH, ROLETA, BAC_BO, AVIATOR, CARDS.
+
+AÇÕES DISPONÍVEIS NO DASHBOARD: "iniciar scout", "iniciar outreach", "iniciar relatorio", /status, /grupos, /leads, /kpis, /agentes, /plano.
+
+Responda de forma técnica e objetiva. Indique ações concretas. Quando sugerir um comando, escreva exatamente entre crases.`;
+
+      const histForGemini = hist.slice(-10).map(m => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{text: m.content}]
+      }));
+      histForGemini.push({role:'user', parts:[{text: text}]});
+
+      hist.push({role:'user', content:text});
+      await saveMsg('user', text);
+
+      const r = await fetch(`${CFG.gemini.endpoint}?key=${CFG.gemini.apiKey}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          system_instruction: {parts: [{text: systemPrompt}]},
+          contents: histForGemini,
+          generationConfig: {maxOutputTokens: 1200, temperature: 0.7}
+        })
       });
-      const data=await r.json();
-      if(data.error)throw new Error(data.error.message);
-      const reply=data.content[0].text;
-      hist.push({role:'assistant',content:reply});
-      await saveMsg('assistant',reply);
-      if(hist.length>40)hist.splice(0,2);
-      const actions=detectActions(reply);
-      addMsg('assistant',reply,actions);
+      const data = await r.json();
+      if(data.error) throw new Error(data.error.message);
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '❌ Sem resposta';
+      hist.push({role:'assistant', content:reply});
+      await saveMsg('assistant', reply);
+      if(hist.length > 40) hist.splice(0, 2);
+      const actions = detectActions(reply);
+      addMsg('assistant', reply, actions);
     }
   }catch(e){
     tp.remove();

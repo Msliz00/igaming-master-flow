@@ -394,7 +394,8 @@ const CFG = {
   },
   claude: {
     model: 'claude-sonnet-4-20250514',
-    sys: 'Você é o AGENTE SISTEMA do IGAMING-MASTER-FLOW. Pipeline iGaming de extração de leads. Supabase com grupos. 23 agentes, 1 ativo. n8n 109 nós com 3 webhooks ativos. Responda em pt-BR, técnico e direto.'
+    apiKey: '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',
+    sys: 'Você é o AGENTE SISTEMA do IGAMING-MASTER-FLOW. Pipeline iGaming de extração de leads iGaming no Telegram. Supabase com grupos. 23 agentes, 1 ativo. n8n 109 nós com 3 webhooks ativos (scout, outreach, relatorio). Operador: 00BABY. Responda em pt-BR, técnico e direto.'
   }
 };
 
@@ -599,7 +600,7 @@ async function sendChat(){
     if(cmd)addMsg('assistant',cmd);
     else{
       hist.push({role:'user',content:text});
-      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:CFG.claude.model,max_tokens:1000,system:CFG.claude.sys,messages:hist})});
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':CFG.claude.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:CFG.claude.model,max_tokens:1000,system:CFG.claude.sys,messages:hist})});
       const data=await r.json();if(data.error)throw new Error(data.error.message);
       const reply=data.content[0].text;hist.push({role:'assistant',content:reply});
       if(hist.length>20)hist.splice(0,2);addMsg('assistant',reply);

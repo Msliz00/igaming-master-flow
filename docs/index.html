@@ -862,7 +862,10 @@ async function runCmd(c){
     await loadData();
     return{text:`✅ **Dados atualizados!**\n\nSupabase recarregado com sucesso.`,
       actions:[{label:'📊 Ver KPIs', cmd:'/kpis', run:false}]};
-  }||cmd.includes('rodar scout')||cmd.includes('ativar scout')){
+  }
+
+  // Ações diretas
+  if(cmd.includes('iniciar scout')||cmd.includes('rodar scout')||cmd.includes('ativar scout')){
     const r=await trigN8nChat('scout');
     return{text:r?`✅ **SCOUT INICIADO**\n\nWebhook disparado com sucesso!\nO pipeline de descoberta está rodando.\n\n⏳ Aguarde ~2-5 minutos para novos grupos aparecerem no Supabase.`:`❌ Falha ao iniciar Scout`,
       actions:[{label:'📋 Ver Grupos', cmd:'/grupos', run:false}]};

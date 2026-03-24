@@ -353,7 +353,14 @@ button{cursor:pointer;font-family:var(--font)}
         <div>
           <div class="stitle">Conexões</div>
           <div class="card"><div style="font-weight:600;margin-bottom:10px">Supabase</div><div style="font-size:11px;color:var(--text2);margin-bottom:5px">URL</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace;word-break:break-all">https://bunxyoekblzyblpqlodk.supabase.co</div><div style="font-size:11px;color:var(--text2);margin:10px 0 6px">Tabelas</div><div><span class="tag gr">raw_groups</span><span class="tag gr">valid_groups</span><span class="tag gr">lote_control</span><span class="tag gr">master_leads</span><span class="tag gr">kpi_tracker</span></div></div>
-          <div class="card"><div style="font-weight:600;margin-bottom:10px">n8n Webhooks</div>
+          <div class="card"><div style="font-weight:600;margin-bottom:10px">🤖 Gemini IA</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:6px">API Key (salva no browser)</div>
+            <div style="display:flex;gap:8px">
+              <input id="gemini-key-input" type="password" placeholder="AIzaSy..." style="flex:1;background:var(--bg-card2);border:1px solid var(--border);border-radius:6px;color:var(--text1);padding:7px 10px;font-size:11px;font-family:monospace;outline:none"/>
+              <button onclick="salvarGeminiKey()" class="btn btn-a bsm">Salvar</button>
+            </div>
+            <div id="gemini-status" style="font-size:11px;margin-top:6px;color:var(--text3)">—</div>
+          </div>
             <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Scout</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace;margin-bottom:8px">https://bekas00.app.n8n.cloud/webhook/igaming-scout</div>
             <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Outreach</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace;margin-bottom:8px">https://bekas00.app.n8n.cloud/webhook/igaming-outreach</div>
             <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Relatório</div><div style="font-size:11px;background:var(--bg-card2);padding:7px 10px;border-radius:6px;font-family:monospace">https://bekas00.app.n8n.cloud/webhook/igaming-relatorio</div>
@@ -393,7 +400,7 @@ const CFG = {
     }
   },
   gemini: {
-    apiKey: 'AIzaSyBH4LKFzp2iUBhF51cbzIiJq6inZVhWbqo',
+    apiKey: localStorage.getItem('gemini_key') || '',
     model: 'gemini-1.5-flash',
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
   }
@@ -963,12 +970,30 @@ function qc(cmd){
 }
 function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
 
-// ══ RELÓGIO ══
+function salvarGeminiKey(){
+  const key = document.getElementById('gemini-key-input').value.trim();
+  if(!key){document.getElementById('gemini-status').textContent='❌ Chave vazia';return;}
+  localStorage.setItem('gemini_key', key);
+  CFG.gemini.apiKey = key;
+  document.getElementById('gemini-status').textContent='✅ Chave salva! Chat Central ativo.';
+  document.getElementById('gemini-key-input').value='';
+  slog('Gemini API key configurada ✓','ok');
+}
+
+
 function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
 // ══ BOOT ══
 (async()=>{
-  updateClock();setInterval(updateClock,1000);
+  // Verifica se já tem chave Gemini salva
+  const savedKey = localStorage.getItem('gemini_key');
+  if(savedKey){
+    CFG.gemini.apiKey = savedKey;
+    document.getElementById('gemini-status').textContent='✅ Chave ativa — Chat Central funcionando.';
+    slog('Gemini: chave carregada do browser ✓','ok');
+  } else {
+    slog('Gemini: configure a chave em Configurações','wrn');
+  }
   renderAgents();renderChats();
   addMsg('assistant','🟢 **CÉREBRO CENTRAL ONLINE**\n\nBem-vindo, 00BABY. Sistema unificado: CTO + Engenheiro N8N + Gerador de Prompts.\n\n**Comandos:** `/status` `/grupos` `/leads` `/kpis`\n**Ações:** `iniciar scout` `iniciar outreach` `iniciar relatorio`\n**Navegação:** `ir para pipeline` `ver agentes` `abrir controle`\n**Ou fale naturalmente — sei tudo sobre o projeto.**',[
     {label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true},

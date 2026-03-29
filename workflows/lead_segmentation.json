@@ -1,0 +1,75 @@
+{
+  "name": "Lead Segmentation Workflow",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Supabase Fetch Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [100, 300],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            { "column": "status", "value": "new" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "2",
+      "name": "Segment by Game",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.game_category}}",
+        "rules": {
+          "rules": [
+            { "value2": "aviator", "output": 0 },
+            { "value2": "fortune_tiger", "output": 1 },
+            { "value2": "gates_olympus", "output": 2 },
+            { "value2": "sweet_bonanza", "output": 3 },
+            { "value2": "spaceman", "output": 4 },
+            { "value2": "mines", "output": 5 },
+            { "value2": "roleta", "output": 6 },
+            { "value2": "slots", "output": 7 },
+            { "value2": "blaze_crash", "output": 8 },
+            { "value2": "futebol", "output": 9 },
+            { "value2": "jet_x", "output": 10 },
+            { "value2": "big_bass", "output": 11 },
+            { "value2": "football_studio", "output": 12 },
+            { "value2": "bac_bo", "output": 13 },
+            { "value2": "cards", "output": 14 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "3",
+      "name": "Update Supabase Segment",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [700, 300],
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "fieldsUi": {
+          "fieldValues": [
+            { "fieldId": "status", "fieldValue": "segmented" },
+            { "fieldId": "tier", "fieldValue": "={{$json.tier}}" }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Supabase Fetch Leads": { "main": [[{ "node": "Segment by Game", "type": "main", "index": 0 }]] },
+    "Segment by Game": { "main": [[{ "node": "Update Supabase Segment", "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

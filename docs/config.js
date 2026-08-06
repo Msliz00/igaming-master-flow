@@ -8,7 +8,7 @@ const CONFIG = {
   // --- SUPABASE ---
   supabase: {
     url: "https://oaenyqkiheipyaiculza.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hZW55cWtpaGVpeWFpY3VsemEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3NTc0NTk1NSwiZXhwIjoyMDkxMzIxOTU1fQ.U-IQPAuXTPR6MsBqi3J6wT1sr2Ad1s5ngKj5SUej1EI"
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hZW55cWtpaGVpcHlhaWN1bHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDU5NTUsImV4cCI6MjA5MTMyMTk1NX0.U-IQPAuXTPR6MsBqi3J6wT1sr2Ad1s5ngKj5SUej1EI"
   },
 
   // --- N8N WEBHOOKS (CORS resolvido ✅) ---

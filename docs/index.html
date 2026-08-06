@@ -492,10 +492,10 @@ function checkN8n(){
 async function loadData(){
   slog('Carregando dados...','inf');
   const[raw,valid,lotes,leads,n8nOk]=await Promise.all([
-    sb('raw_groups','select=id&limit=1'),
-    sb('valid_groups','select=id&limit=1'),
-    sb('lote_control','select=id&limit=1'),
-    sb('master_leads','select=id&limit=1'),
+    sb('mercado_grupos','select=id&limit=1'),
+    sb('mercado_grupos','select=id&limit=1'),
+    sb('metricas_diarias','select=id&limit=1'),
+    sb('metricas_diarias','select=id&limit=1'),
     checkN8n()
   ]);
 
@@ -652,11 +652,11 @@ function addMsg(role, text, actions=[]){
 // Coleta dados do Supabase para contexto da IA
 async function getContextData(){
   const[raw,valid,leads,lotes,kpi]=await Promise.all([
-    sb('raw_groups','select=id&limit=1'),
-    sb('valid_groups','select=id&limit=1'),
-    sb('master_leads','select=id&limit=1'),
-    sb('lote_control','select=id&limit=1'),
-    sb('kpi_tracker','select=id&limit=1')
+    sb('mercado_grupos','select=id&limit=1'),
+    sb('mercado_grupos','select=id&limit=1'),
+    sb('metricas_diarias','select=id&limit=1'),
+    sb('metricas_diarias','select=id&limit=1'),
+    sb('cartografo_execucoes','select=id&limit=1')
   ]);
   return {
     raw_groups: raw.count,
@@ -693,10 +693,10 @@ async function runCmd(c){
   // Status
   if(cmd==='/status'){
     const[g,v,l,lo]=await Promise.all([
-      sb('raw_groups','select=id&limit=1'),
-      sb('valid_groups','select=id&limit=1'),
-      sb('master_leads','select=id&limit=1'),
-      sb('lote_control','select=id&limit=1')
+      sb('mercado_grupos','select=id&limit=1'),
+      sb('mercado_grupos','select=id&limit=1'),
+      sb('metricas_diarias','select=id&limit=1'),
+      sb('metricas_diarias','select=id&limit=1')
     ]);
     return {
       text:`📊 **STATUS — ${ts()}**\n\nSupabase: 🟢 ONLINE\n• raw_groups: **${g.count}** | valid_groups: **${v.count}**\n• master_leads: **${l.count}** | lotes: **${lo.count}**\n\nn8n: 🟢 WEBHOOKS ONLINE\n• scout | outreach | relatorio\n\nAgentes: 1/23 ativos`,
@@ -709,7 +709,7 @@ async function runCmd(c){
 
   // Grupos
   if(cmd==='/grupos'||cmd==='ver grupos'){
-    const r=await sb('raw_groups','select=title,segment,members_count&limit=8&order=members_count.desc');
+    const r=await sb('mercado_grupos','select=title,segment,members_count&limit=8&order=members_count.desc');
     if(!r.ok)return{text:`❌ ${r.error}`,actions:[]};
     const lines=r.data.slice(0,8).map((g,i)=>`${i+1}. **${g.title||'Sem título'}** — ${g.members_count||0} membros [${g.segment||'GERAL'}]`).join('\n');
     return{text:`📋 **GRUPOS — Total: ${r.count}**\n\n${lines||'Sem dados'}`,actions:[]};
@@ -717,7 +717,7 @@ async function runCmd(c){
 
   // Leads
   if(cmd==='/leads'||cmd==='ver leads'){
-    const r=await sb('master_leads','select=*&limit=3&order=extracted_at.desc');
+    const r=await sb('metricas_diarias','select=*&limit=3&order=extracted_at.desc');
     if(r.count==='0'||r.data.length===0)
       return{text:`🎯 **LEADS — Total: 0**\n\nPipeline ainda não extraiu leads. Execute o Scout primeiro.`,
         actions:[{label:'▶ Iniciar Scout', cmd:'iniciar scout', run:true}]};
@@ -728,10 +728,10 @@ async function runCmd(c){
   // KPIs
   if(cmd==='/kpis'||cmd==='ver kpis'){
     const[r,v,l,lo]=await Promise.all([
-      sb('raw_groups','select=id&limit=1'),
-      sb('valid_groups','select=id&limit=1'),
-      sb('master_leads','select=id&limit=1'),
-      sb('lote_control','select=id&limit=1')
+      sb('mercado_grupos','select=id&limit=1'),
+      sb('mercado_grupos','select=id&limit=1'),
+      sb('metricas_diarias','select=id&limit=1'),
+      sb('metricas_diarias','select=id&limit=1')
     ]);
     const taxa=r.ok&&v.ok?Math.round(parseInt(v.count||0)/Math.max(parseInt(r.count||1),1)*100)+'%':'N/A';
     return{text:`📊 **KPIs COMPLETOS — ${ts()}**\n\n🔍 raw_groups: **${r.count}**\n✅ valid_groups: **${v.count}**\n📦 lotes: **${lo.count}**\n👤 master_leads: **${l.count}**\n📈 Taxa validação: **${taxa}**`,actions:[]};

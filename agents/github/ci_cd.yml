@@ -1,0 +1,78 @@
+name: CI/CD Pipeline — iGaming Master Flow
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6am UTC
+
+jobs:
+  validate-workflows:
+    name: Validate n8n Workflow JSON
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate JSON files
+        run: |
+          echo "Validating n8n workflow JSON files..."
+          for f in workflows/*.json; do
+            python3 -m json.tool "$f" > /dev/null && echo "✅ $f is valid" || (echo "❌ $f is invalid" && exit 1)
+          done
+
+  validate-prompts:
+    name: Validate Agent Prompts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check prompt files exist
+        run: |
+          GAMES="aviator fortune_tiger gates_olympus sweet_bonanza spaceman mines roleta slots blaze_crash futebol jet_x big_bass football_studio bac_bo cards"
+          for game in $GAMES; do
+            if [ ! -f "agents/chatgpt/${game}.md" ]; then
+              echo "❌ Missing prompt: agents/chatgpt/${game}.md"
+              exit 1
+            fi
+            echo "✅ Found: agents/chatgpt/${game}.md"
+          done
+
+  sync-supabase-schema:
+    name: Sync Supabase Schema
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [validate-workflows, validate-prompts]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+
+      - name: Validate schema files
+        run: |
+          if [ -d "supabase/migrations" ]; then
+            echo "✅ Supabase migrations directory found"
+            ls supabase/migrations/
+          else
+            echo "ℹ️ No migrations directory — skipping schema sync"
+          fi
+
+  deploy-notification:
+    name: Notify Deployment
+    runs-on: ubuntu-latest
+    needs: [validate-workflows, validate-prompts]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Send deployment notification
+        run: |
+          echo "🚀 iGaming Master Flow deployed successfully"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"

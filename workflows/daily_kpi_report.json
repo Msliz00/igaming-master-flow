@@ -1,0 +1,63 @@
+{
+  "name": "Daily KPI Report Workflow",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Daily Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [100, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 8 * * *" }]
+        }
+      }
+    },
+    {
+      "id": "2",
+      "name": "Fetch KPI Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM get_daily_kpi_summary(NOW() - INTERVAL '1 day', NOW())"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Generate Report",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "parameters": {
+        "functionCode": "const data = items.map(i => i.json);\nconst date = new Date().toISOString().split('T')[0];\nconst report = {\n  date,\n  total_leads: data.reduce((s, r) => s + parseInt(r.total_leads), 0),\n  total_converted: data.reduce((s, r) => s + parseInt(r.converted), 0),\n  by_game: data\n};\nreturn [{ json: report }];"
+      }
+    },
+    {
+      "id": "4",
+      "name": "Save Report",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [700, 300],
+      "parameters": {
+        "operation": "insert",
+        "tableId": "daily_reports",
+        "fieldsUi": {
+          "fieldValues": [
+            { "fieldId": "report_date", "fieldValue": "={{$json.date}}" },
+            { "fieldId": "data", "fieldValue": "={{JSON.stringify($json)}}" }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily Schedule": { "main": [[{ "node": "Fetch KPI Data", "type": "main", "index": 0 }]] },
+    "Fetch KPI Data": { "main": [[{ "node": "Generate Report", "type": "main", "index": 0 }]] },
+    "Generate Report": { "main": [[{ "node": "Save Report", "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
